@@ -1,1 +1,1 @@
-# VH-Beanworks-Challenge
+# Vanhack Beanworks Challenge
