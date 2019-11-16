@@ -40,5 +40,5 @@ app.listen(config.server.port, () => {
     await xeroSyncManager.sync(new XeroAccountLoader(), accountStorage);
     await xeroSyncManager.sync(new XeroVendorLoader(), vendorStorage);
     
-    console.log(vendorStorage.items);
+    //console.log(vendorStorage.items);
 })();
