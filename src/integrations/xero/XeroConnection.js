@@ -1,9 +1,7 @@
 import { AccountingAPIClient } from "xero-node";
 
-class XeroConnection {
+export default class XeroConnection {
     constructor(xeroConfig) {
         this.client = new AccountingAPIClient(xeroConfig);
     }
 }
-
-export default XeroConnection;

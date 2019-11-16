@@ -1,8 +1,5 @@
 class SyncCompleteStatus {
-    constructor(successfulRecords, failedRecords, totalRecords, error) {
-        this.successfulRecords = successfulRecords;
-        this.failedRecords = failedRecords;
-        this.totalRecords = totalRecords;
+    constructor(error) {
         this.error = error;
     }
 }

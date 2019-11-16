@@ -1,11 +1,10 @@
-import { XeroAccountLoader, XeroVendorLoader } from '../../../src/integrations/xero/loaders';
+import loaders from '../../../src/integrations/xero/loaders';
 import JestMock from 'jest-mock';
 
 describe('Loaders', () => {
     [0, 3].forEach(accountCount =>
         it(`should test that account models count === received accounts count (${accountCount})`, async () => {
             const cccountsResponse = generateAccountsResponse(accountCount);
-            const loader = new XeroAccountLoader();
             const getAccountsMock = JestMock.fn(() => Promise.resolve(cccountsResponse));
             const connection = {
                 client: {
@@ -15,7 +14,7 @@ describe('Loaders', () => {
                 }
             };
 
-            const accounts = await loader.load(connection);
+            const accounts = await loaders.accountLoader.load(connection);
 
             expect(getAccountsMock.mock.calls.length).toBe(1);
             expect(accounts.length).toBe(cccountsResponse.Accounts.length);
@@ -24,7 +23,6 @@ describe('Loaders', () => {
     [0, 3].forEach(vendorCount =>
         it(`should test that vendor models count === received vendors count (${vendorCount})`, async () => {
             const vendorsResponse = generateVendorsResponse(vendorCount);
-            const loader = new XeroVendorLoader();
             const getVendorsMock = JestMock.fn(() => Promise.resolve(vendorsResponse));
             const connection = {
                 client: {
@@ -34,7 +32,7 @@ describe('Loaders', () => {
                 }
             };
 
-            const vendors = await loader.load(connection);
+            const vendors = await loaders.vendorLoader.load(connection);
 
             expect(getVendorsMock.mock.calls.length).toBe(1);
             expect(vendors.length).toBe(vendorsResponse.Contacts.length);

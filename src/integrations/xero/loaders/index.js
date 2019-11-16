@@ -1,7 +1,7 @@
 import XeroAccountLoader from "./XeroAccountLoader";
 import XeroVendorLoader from './XeroVendorLoader';
 
-export {
-    XeroAccountLoader,
-    XeroVendorLoader
+export default {
+    accountLoader: new XeroAccountLoader(),
+    vendorLoader: new XeroVendorLoader()
 };
