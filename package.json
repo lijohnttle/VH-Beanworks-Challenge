@@ -1,0 +1,38 @@
+{
+  "name": "vh-beanworks-challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build-server": "webpack --config webpack/server.dev.config.js",
+    "build-server:prod": "webpack --config webpack/server.prod.config.js",
+    "start": "node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lijohnttle/VH-Beanworks-Challenge.git"
+  },
+  "author": "Ivan Cherkasov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lijohnttle/VH-Beanworks-Challenge/issues"
+  },
+  "homepage": "https://github.com/lijohnttle/VH-Beanworks-Challenge#readme",
+  "dependencies": {
+    "@babel/polyfill": "^7.7.0",
+    "@material-ui/core": "^4.6.1",
+    "@material-ui/icons": "^4.5.1",
+    "core-js": "^3.4.1",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
