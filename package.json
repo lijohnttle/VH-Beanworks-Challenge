@@ -6,7 +6,8 @@
   "scripts": {
     "build-server": "webpack --config webpack/server.dev.config.js",
     "build-server:prod": "webpack --config webpack/server.prod.config.js",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist/index.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,14 @@
     "@material-ui/core": "^4.6.1",
     "@material-ui/icons": "^4.5.1",
     "core-js": "^3.4.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^14.5.8",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-router": "^5.1.2",
+    "xero-node": "^3.1.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
@@ -32,7 +40,15 @@
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
     "babel-loader": "^8.0.6",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
