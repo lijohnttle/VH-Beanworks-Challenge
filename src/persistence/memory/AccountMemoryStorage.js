@@ -12,6 +12,10 @@ class AccountMemoryStorage {
     async persist(items) {
         this.items = items;
     }
+
+    async getItems() {
+        return Promise.resolve(this.items);
+    }
 }
 
 export default AccountMemoryStorage;

@@ -1,9 +1,9 @@
-import SyncLogMemoryStorage from './SyncLogMemoryStorage';
+import SyncDataSessionsMemoryStorage from './SyncDataSessionsMemoryStorage';
 import AccountMemoryStorage from './AccountMemoryStorage';
 import VendorMemoryStorage from './VendorMemoryStorage';
 
 export default {
-    syncLogStorage: new SyncLogMemoryStorage(),
+    syncDataSessionsStorage: new SyncDataSessionsMemoryStorage(),
     accountStorage: new AccountMemoryStorage(),
     vendorStorage: new VendorMemoryStorage()
 };

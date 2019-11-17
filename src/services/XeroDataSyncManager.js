@@ -1,103 +1,153 @@
-import { EventEmitter } from "events";
-import XeroConnection from "../integrations/xero/XeroConnection";
+import ServerContext from '../server/ServerContext';
+import XeroConnectionContext from "./XeroConnectionContext";
 import EventTypes from '../events/EventType';
 import SyncDataOperation from '../constants/SyncDataOperation';
 import SyncDataState from '../constants/SyncDataState';
 import SyncDataItem from '../constants/SyncDataItem';
 import SyncLogRecordModel from '../models/SyncLogRecordModel';
 import SyncCompleteStatus from '../models/SyncCompleteStatus';
+import SyncDataSessionModel from '../models/SyncDataSessionModel';
 
-class XeroDataSyncManager {
-    /**
-     * @param {Object} loaders 
-     * @param {Object} storages 
-     * @param {EventEmitter} eventEmitter 
-     * @param {XeroConnection} connection 
-     */
-    constructor(loaders, storages, eventEmitter, connection) {
-        this.loaders = loaders;
-        this.storages = storages;
-        this.eventEmitter = eventEmitter;
-        this.connection = connection;
+
+/**
+ * Synchronizes accounts information from Xero.
+ * 
+ * @param {SyncDataSessionModel} session
+ * @param {ServerContext} serverContext
+ * @param {XeroConnectionContext} xeroContext
+ * 
+ * @returns {Promise}
+ */
+async function syncAccounts(session, serverContext, xeroContext) {
+    const { eventEmitter, storages } = serverContext;
+    const { loaders, connection } = xeroContext;
+
+    session.addLogRecord(new SyncLogRecordModel(
+        Date.now(),
+        SyncDataOperation.SYNC_FROM_ERP,
+        SyncDataState.START,
+        SyncDataItem.ACCOUNT
+    ));
+
+    eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
+
+    let completeStatus = null;
+
+    try {
+        const accounts = await loaders.accountLoader.load(connection);
+
+        await storages.accountStorage.persist(accounts);
     }
+    catch (error) {
+        completeStatus = new SyncCompleteStatus(error);
 
-    /**
-     * @returns {Promise}
-     */
-    async syncAll() {
-        await Promise.all([
-            this.syncAccounts(),
-            this.syncVendors(),
-        ]);
+        throw error;
     }
-
-    /**
-     * @returns {Promise}
-     */
-    async syncAccounts() {
-        this.eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
+    finally {
+        session.addLogRecord(new SyncLogRecordModel(
             Date.now(),
             SyncDataOperation.SYNC_FROM_ERP,
             SyncDataState.START,
-            SyncDataItem.ACCOUNT
+            SyncDataItem.ACCOUNT,
+            completeStatus
         ));
 
-        let completeStatus = null;
-
-        try {
-            const accounts = await this.loaders.accountLoader.load(this.connection);
-
-            await this.storages.accountStorage.persist(accounts);
-        }
-        catch (error) {
-            completeStatus = new SyncCompleteStatus(error);
-
-            throw error;
-        }
-        finally {
-            this.eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
-                Date.now(),
-                SyncDataOperation.SYNC_FROM_ERP,
-                SyncDataState.START,
-                SyncDataItem.ACCOUNT,
-                completeStatus
-            ));
-        }
-    }
-
-    /**
-     * @returns {Promise}
-     */
-    async syncVendors() {
-        this.eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
-            Date.now(),
-            SyncDataOperation.SYNC_FROM_ERP,
-            SyncDataState.START,
-            SyncDataItem.VENDOR
-        ));
-
-        let completeStatus = null;
-
-        try {
-            const vendors = await this.loaders.vendorLoader.load(this.connection);
-
-            await this.storages.vendorStorage.persist(vendors);
-        }
-        catch (error) {
-            completeStatus = new SyncCompleteStatus(error);
-
-            throw error;
-        }
-        finally {
-            this.eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
-                Date.now(),
-                SyncDataOperation.SYNC_FROM_ERP,
-                SyncDataState.START,
-                SyncDataItem.VENDOR,
-                completeStatus
-            ));
-        }
+        eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
     }
 }
 
-export default XeroDataSyncManager;
+/**
+ * Synchronizes vendors information from Xero.
+ * 
+ * @param {SyncDataSessionModel} session
+ * @param {ServerContext} serverContext
+ * @param {XeroConnectionContext} xeroContext
+ * 
+ * @returns {Promise}
+ */
+async function syncVendors(session, serverContext, xeroContext) {
+    const { eventEmitter, storages } = serverContext;
+    const { loaders, connection } = xeroContext;
+
+    session.addLogRecord(new SyncLogRecordModel(
+        Date.now(),
+        SyncDataOperation.SYNC_FROM_ERP,
+        SyncDataState.START,
+        SyncDataItem.VENDOR
+    ));
+
+    eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
+
+    let completeStatus = null;
+
+    try {
+        const vendors = await loaders.vendorLoader.load(connection);
+
+        await storages.vendorStorage.persist(vendors);
+    }
+    catch (error) {
+        completeStatus = new SyncCompleteStatus(error);
+
+        throw error;
+    }
+    finally {
+        session.addLogRecord(new SyncLogRecordModel(
+            Date.now(),
+            SyncDataOperation.SYNC_FROM_ERP,
+            SyncDataState.START,
+            SyncDataItem.VENDOR,
+            completeStatus
+        ));
+
+        eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
+    }
+}
+
+export default class XeroDataSyncManager {
+    /**
+     * @param {ServerContext} serverContext
+     * @param {XeroConnectionContext} xeroContext
+     */
+    constructor(serverContext, xeroContext) {
+        this.serverContext = serverContext;
+        this.xeroContext = xeroContext;
+        this.activeSession = null;
+    }
+
+    /**
+     * Synchronizes data with Zero.
+     * 
+     * @returns {Promise}
+     */
+    async syncData() {
+        if (this.activeSession) {
+            return;
+        }
+
+        try {
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
+            this.activeSession = new SyncDataSessionModel(null, 'ACTIVE', Date.now());
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+            
+            await Promise.all([
+                syncAccounts(this.activeSession, this.serverContext, this.xeroContext),
+                syncVendors(this.activeSession, this.serverContext, this.xeroContext)
+            ]);
+
+            await new Promise(resolve => {
+                setTimeout(resolve, 3000);
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
+        finally {
+            const completedSession = this.activeSession;
+
+            this.activeSession.status = 'COMPLETE';
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+            this.activeSession = null;
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE, completedSession);
+        }
+    }
+}

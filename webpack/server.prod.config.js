@@ -21,7 +21,7 @@ module.exports = {
         extensions: ['*', '.mjs', '.js', '.vue', '.json', '.gql', '.graphql']
     },
     output: {
-        path: path.resolve(__dirname, '../dist'),
+        path: path.resolve(process.cwd(), 'dist'),
         publicPath: '/',
         filename: 'index.js'
     },
@@ -29,5 +29,8 @@ module.exports = {
     node: {
         fs: 'empty',
         net: 'empty'
+    },
+    externals: {
+        uws: "uws"
     }
 };
