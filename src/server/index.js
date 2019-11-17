@@ -11,9 +11,9 @@ import loaders from '../integrations/xero/loaders';
 import { useStorages } from '../persistence/mongodb';
 import XeroDataSyncManager from '../services/XeroDataSyncManager';
 import ServerContext from './ServerContext';
-import NotificationsContext from '../services/NotificationsContext';
 import XeroConnectionContext from '../services/XeroConnectionContext';
 import SyncDataEventHandler from '../events/SyncDataEventHandler';
+import NotificationType from '../constants/NotificationType';
 
 
 // utils
@@ -23,8 +23,7 @@ const eventEmitter = new EventEmitter();
 
 // app
 const config = loadConfig(process.env.NODE_ENV);
-const notificationsContext = new NotificationsContext();
-const serverContext = new ServerContext(config, useStorages(config), eventEmitter, notificationsContext);
+const serverContext = new ServerContext(config, useStorages(config), eventEmitter);
 const app = express();
 
 const xeroConnection = new XeroConnection(config.xero);
@@ -56,5 +55,11 @@ const server = app.listen(config.server.port, () => {
 });
 
 const io = socketIo(server, { serveClient: false });
+
+io.on('connection', socket => {
+    socket.on(NotificationType.JOIN_ROOM, room => {
+        socket.join(room);
+    });
+});
 
 serverContext.configureIo(io);

@@ -11,6 +11,12 @@ const GET_SYNC_DATA_STATE = `
                 sessionID
                 status
                 startedUTC
+                syncLog {
+                    timestamp
+                    operation
+                    state
+                    item
+                }
             }
         }
     }

@@ -16,7 +16,8 @@ function useResolvers(context, syncManager) {
                 sessions: sessions.slice().reverse().map(session => ({
                     sessionID: session.sessionID,
                     status: session.status,
-                    startedUTC: session.startedUTC
+                    startedUTC: session.startedUTC,
+                    syncLog: session.syncLog
                 }))
             };
         },

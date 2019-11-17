@@ -48,7 +48,7 @@ async function syncAccounts(session, serverContext, xeroContext) {
         session.addLogRecord(new SyncLogRecordModel(
             Date.now(),
             SyncDataOperation.SYNC_FROM_ERP,
-            SyncDataState.START,
+            SyncDataState.END,
             SyncDataItem.ACCOUNT,
             completeStatus
         ));
@@ -95,7 +95,7 @@ async function syncVendors(session, serverContext, xeroContext) {
         session.addLogRecord(new SyncLogRecordModel(
             Date.now(),
             SyncDataOperation.SYNC_FROM_ERP,
-            SyncDataState.START,
+            SyncDataState.END,
             SyncDataItem.VENDOR,
             completeStatus
         ));
@@ -134,18 +134,14 @@ export default class XeroDataSyncManager {
                 syncAccounts(this.activeSession, this.serverContext, this.xeroContext),
                 syncVendors(this.activeSession, this.serverContext, this.xeroContext)
             ]);
-
-            await new Promise(resolve => {
-                setTimeout(resolve, 3000);
-            });
         }
         catch (error) {
             console.error(error);
         }
         finally {
-            const completedSession = this.activeSession;
-
             this.activeSession.status = 'COMPLETE';
+            const completedSession = this.activeSession;
+ 
             this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
             this.activeSession = null;
             this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE, completedSession);

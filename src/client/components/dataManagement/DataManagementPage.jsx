@@ -1,23 +1,10 @@
 import React from 'react';
 import socketIoClient from 'socket.io-client';
-import { Typography, Button, Box, Table, TableBody, TableRow, TableCell, CircularProgress } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { Typography, Button, Box, CircularProgress } from '@material-ui/core';
 import SyncDataService from '../../services/SyncDataService';
 import NotificationType from '../../../constants/NotificationType';
-
-const SyncTableCell = withStyles(theme => ({
-    head: {
-        backgroundColor: theme.palette.common.gainsboro,
-    }
-}))(TableCell);
-
-const SyncTableRow = withStyles(theme => ({
-    root: {
-        '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.background.default,
-        },
-    },
-}))(TableRow);
+import SyncDataSessionList from './SyncDataSessionList';
+import SyncDataSessionLog from './SyncDataSessionLog';
 
 class DataManagementPage extends React.Component {
     constructor(props) {
@@ -26,15 +13,16 @@ class DataManagementPage extends React.Component {
         this.state = {
             isLoading: true,
             isSyncRunning: false,
-            socketEndpoint: {
-                response: false,
-                endpoint: "http://127.0.0.1:3000"
-            },
-            sessions: []
+            updatesEndpoint: null,
+            sessions: [],
+            selectedSessionId: null,
+            selectedSessionLogs: []
         };
         this._socket = null;
+        this._sessionSocket = null;
 
         this.syncData = this.syncData.bind(this);
+        this.showSessionLogs = this.showSessionLogs.bind(this);
     }
 
     async syncData() {
@@ -43,6 +31,21 @@ class DataManagementPage extends React.Component {
         }
         catch (error) {
             console.error(error);
+        }
+    }
+
+    showSessionLogs(session) {
+        if (session) {
+            this.setState({
+                selectedSessionId: session.sessionID,
+                selectedSessionLogs: session.syncLog.slice().sort((a, b) => b.timestamp - a.timestamp)
+            });
+        }
+        else {
+            this.setState({
+                selectedSessionId: null,
+                selectedSessionLogs: []
+            });
         }
     }
 
@@ -62,8 +65,13 @@ class DataManagementPage extends React.Component {
             const syncState = await SyncDataService.getSyncDataState();
             const endpoint = {
                 response: false,
+                reconnect: true,
                 endpoint: syncState.notificationsEndpoint
             }
+
+            this.setState({
+                updatesEndpoint: endpoint
+            });
             
             this._socket = socketIoClient(endpoint);
             this._socket.on(NotificationType.SYNC_DATA_STARTED, () => {
@@ -77,9 +85,16 @@ class DataManagementPage extends React.Component {
                     
                     this.updateSyncDataSession(session, sessions);
 
+                    let syncLog = state.selectedSessionLogs;
+
+                    if (state.selectedSessionId === session.sessionID) {
+                        syncLog = session.syncLog.slice().sort((a, b) => b.timestamp - a.timestamp);
+                    }
+
                     return {
                         isSyncRunning: true,
-                        sessions: sessions
+                        sessions: sessions,
+                        selectedSessionLogs: syncLog
                     };
                 });
             });
@@ -89,9 +104,16 @@ class DataManagementPage extends React.Component {
 
                     this.updateSyncDataSession(session, sessions);
 
+                    let syncLog = state.selectedSessionLogs;
+
+                    if (state.selectedSessionId === session.sessionID) {
+                        syncLog = session.syncLog.slice().sort((a, b) => b.timestamp - a.timestamp);
+                    }
+
                     return {
                         isSyncRunning: false,
-                        sessions: sessions
+                        sessions: sessions,
+                        selectedSessionLogs: syncLog
                     };
                 });
             });
@@ -108,7 +130,10 @@ class DataManagementPage extends React.Component {
     }
 
     componentWillUnmount() {
-        this._socket.disconnect();
+        if (this._socket) {
+            this._socket.disconnect();
+            this._socket = null;
+        }
     }
 
     render() {
@@ -140,23 +165,16 @@ class DataManagementPage extends React.Component {
                         Sync Activities
                     </Typography>
 
-                    <Table>
-                        <TableBody>
-                            {this.state.sessions.map(session => (
-                                <SyncTableRow key={session.sessionID}>
-                                    <SyncTableCell>
-                                        {session.status}
-                                    </SyncTableCell>
-                                    <SyncTableCell>
-                                        {new Date(session.startedUTC).toLocaleString()}
-                                    </SyncTableCell>
-                                    <SyncTableCell>
-                                        Logs
-                                    </SyncTableCell>
-                                </SyncTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <Box display="flex" flexDirection="row">
+                        <SyncDataSessionList
+                            sessions={this.state.sessions}
+                            selectedSessionId={this.state.selectedSessionId}
+                            showSessionLogs={this.showSessionLogs} />
+
+                        {this.state.selectedSessionId ? (
+                            <SyncDataSessionLog syncLog={this.state.selectedSessionLogs} />
+                        ) : null}
+                    </Box>
                 </Box>
             </div>
         );
