@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import socketIo from 'socket.io';
 import { loadConfig } from './config';
 import XeroConnection from '../integrations/xero/XeroConnection';
 import { subscribeEvents, eventEmitter } from './events';
@@ -47,6 +48,13 @@ app.get('/', (_, res) => {
 });
 
 
-app.listen(config.server.port, () => {
+const server = app.listen(config.server.port, () => {
     console.log(`Server is listening on port ${config.server.port}`);
+});
+const io = socketIo(server, { serveClient: false });
+
+io.on('connection', socket => {
+    console.log('connected');
+
+    socket.on('disconnect', () => console.log('disconnected'));
 });

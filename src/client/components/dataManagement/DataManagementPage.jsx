@@ -1,4 +1,5 @@
 import React from 'react';
+import socketIoClient from 'socket.io-client';
 import { Typography, Button, Box, Table, TableBody, TableRow, TableCell, Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import SyncDataService from '../../services/SyncDataService';
@@ -21,11 +22,31 @@ class DataManagementPage extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            socketEndpoint: {
+                response: false,
+                endpoint: "http://127.0.0.1:3000"
+            }
+        };
+        this._socket = null;
+
         this.syncData = this.syncData.bind(this);
     }
 
     async syncData() {
         await SyncDataService.syncDataFromErp();
+    }
+
+    componentDidMount() {
+        const { endpoint } = this.state.socketEndpoint;
+        this._socket = socketIoClient(endpoint);
+        this._socket.on('FromAPI', data => {
+            console.log('received data');
+        });
+    }
+
+    componentWillUnmount() {
+        this._socket.disconnect();
     }
 
     render() {

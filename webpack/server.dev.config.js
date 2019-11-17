@@ -30,7 +30,10 @@ module.exports = {
     },
     target: 'node',
     node: {
-        fs: 'empty',
-        net: 'empty'
+        'fs': 'empty',
+        'net': 'empty'
+    },
+    externals: {
+        uws: "uws"
     }
 };
