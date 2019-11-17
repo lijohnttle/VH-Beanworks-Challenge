@@ -29,7 +29,8 @@ class DataManagementPage extends React.Component {
             socketEndpoint: {
                 response: false,
                 endpoint: "http://127.0.0.1:3000"
-            }
+            },
+            sessions: []
         };
         this._socket = null;
 
@@ -42,6 +43,17 @@ class DataManagementPage extends React.Component {
         }
         catch (error) {
             console.error(error);
+        }
+    }
+
+    updateSyncDataSession(session, sessions) {
+        const existing = sessions.find(s => s.sessionID === session.sessionID);
+
+        if (existing) {
+            sessions[sessions.indexOf(existing)] = session;
+        }
+        else {
+            sessions.unshift(session);
         }
     }
 
@@ -58,17 +70,35 @@ class DataManagementPage extends React.Component {
                 this.setState({
                     isSyncRunning: true
                 });
-                console.log('Sync started');
             });
-            this._socket.on(NotificationType.SYNC_DATA_COMPLETE, () => {
-                this.setState({
-                    isSyncRunning: false
+            this._socket.on(NotificationType.SYNC_DATA_UPDATE, session => {
+                this.setState(state => {
+                    const sessions = state.sessions.slice();
+
+                    this.updateSyncDataSession(session, sessions);
+
+                    return {
+                        isSyncRunning: true,
+                        sessions: sessions
+                    };
                 });
-                console.log('Sync complete');
+            });
+            this._socket.on(NotificationType.SYNC_DATA_COMPLETE, session => {
+                this.setState(state => {
+                    const sessions = state.sessions.slice();
+
+                    this.updateSyncDataSession(session, sessions);
+
+                    return {
+                        isSyncRunning: false,
+                        sessions: sessions
+                    };
+                });
             });
             this.setState({
                 isLoading: false,
-                isSyncRunning: syncState.isSyncRunning
+                isSyncRunning: syncState.isSyncRunning,
+                sessions: syncState.sessions
             });
         }
         catch (error) {
@@ -96,7 +126,6 @@ class DataManagementPage extends React.Component {
                             color="primary"
                             disabled={this.state.isLoading || this.state.isSyncRunning}
                             onClick={this.syncData}>
-                            
                             Sync
                         </Button>
 
@@ -112,17 +141,19 @@ class DataManagementPage extends React.Component {
 
                     <Table>
                         <TableBody>
-                            <SyncTableRow>
-                                <SyncTableCell>
-                                    1
-                                </SyncTableCell>
-                                <SyncTableCell>
-                                    2
-                                </SyncTableCell>
-                                <SyncTableCell>
-                                    3
-                                </SyncTableCell>
-                            </SyncTableRow>
+                            {this.state.sessions.map(session => (
+                                <SyncTableRow key={session.sessionID}>
+                                    <SyncTableCell>
+                                        {session.status}
+                                    </SyncTableCell>
+                                    <SyncTableCell>
+                                        {new Date(session.startedUTC).toLocaleString()}
+                                    </SyncTableCell>
+                                    <SyncTableCell>
+                                        Logs
+                                    </SyncTableCell>
+                                </SyncTableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </Box>

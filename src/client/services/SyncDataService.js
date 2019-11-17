@@ -7,6 +7,11 @@ const GET_SYNC_DATA_STATE = `
         getSyncDataState {
             notificationsEndpoint
             isSyncRunning
+            sessions {
+                sessionID
+                status
+                startedUTC
+            }
         }
     }
 `;

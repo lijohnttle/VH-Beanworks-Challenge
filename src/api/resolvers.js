@@ -7,10 +7,17 @@ import XeroDataSyncManager from '../services/XeroDataSyncManager';
  */
 function useResolvers(context, syncManager) {
     const resolvers = {
-        getSyncDataState: () => {
+        getSyncDataState: async () => {
+            const sessions = await context.storages.syncDataSessionsStorage.getItems();
+
             return {
                 notificationsEndpoint: context.config.server.socketUrl,
-                isSyncRunning: false
+                isSyncRunning: syncManager.activeSession != null,
+                sessions: sessions.slice().reverse().map(session => ({
+                    sessionID: session.sessionID,
+                    status: session.status,
+                    startedUTC: session.startedUTC
+                }))
             };
         },
         syncDataFromErp: async () => {

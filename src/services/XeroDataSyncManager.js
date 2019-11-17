@@ -6,27 +6,30 @@ import SyncDataState from '../constants/SyncDataState';
 import SyncDataItem from '../constants/SyncDataItem';
 import SyncLogRecordModel from '../models/SyncLogRecordModel';
 import SyncCompleteStatus from '../models/SyncCompleteStatus';
+import SyncDataSessionModel from '../models/SyncDataSessionModel';
 
 
 /**
  * Synchronizes accounts information from Xero.
  * 
+ * @param {SyncDataSessionModel} session
  * @param {ServerContext} serverContext
  * @param {XeroConnectionContext} xeroContext
  * 
  * @returns {Promise}
  */
-async function syncAccounts(serverContext, xeroContext) {
+async function syncAccounts(session, serverContext, xeroContext) {
     const { eventEmitter, storages } = serverContext;
     const { loaders, connection } = xeroContext;
 
-
-    eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
+    session.addLogRecord(new SyncLogRecordModel(
         Date.now(),
         SyncDataOperation.SYNC_FROM_ERP,
         SyncDataState.START,
         SyncDataItem.ACCOUNT
     ));
+
+    eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
 
     let completeStatus = null;
 
@@ -41,34 +44,39 @@ async function syncAccounts(serverContext, xeroContext) {
         throw error;
     }
     finally {
-        eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
+        session.addLogRecord(new SyncLogRecordModel(
             Date.now(),
             SyncDataOperation.SYNC_FROM_ERP,
             SyncDataState.START,
             SyncDataItem.ACCOUNT,
             completeStatus
         ));
+
+        eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
     }
 }
 
 /**
  * Synchronizes vendors information from Xero.
  * 
+ * @param {SyncDataSessionModel} session
  * @param {ServerContext} serverContext
  * @param {XeroConnectionContext} xeroContext
  * 
  * @returns {Promise}
  */
-async function syncVendors(serverContext, xeroContext) {
+async function syncVendors(session, serverContext, xeroContext) {
     const { eventEmitter, storages } = serverContext;
     const { loaders, connection } = xeroContext;
 
-    eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
+    session.addLogRecord(new SyncLogRecordModel(
         Date.now(),
         SyncDataOperation.SYNC_FROM_ERP,
         SyncDataState.START,
         SyncDataItem.VENDOR
     ));
+
+    eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
 
     let completeStatus = null;
 
@@ -83,13 +91,15 @@ async function syncVendors(serverContext, xeroContext) {
         throw error;
     }
     finally {
-        eventEmitter.emit(EventTypes.LOG_SYNC_DATA, new SyncLogRecordModel(
+        session.addLogRecord(new SyncLogRecordModel(
             Date.now(),
             SyncDataOperation.SYNC_FROM_ERP,
             SyncDataState.START,
             SyncDataItem.VENDOR,
             completeStatus
         ));
+
+        eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, session);
     }
 }
 
@@ -101,6 +111,7 @@ export default class XeroDataSyncManager {
     constructor(serverContext, xeroContext) {
         this.serverContext = serverContext;
         this.xeroContext = xeroContext;
+        this.activeSession = null;
     }
 
     /**
@@ -109,12 +120,18 @@ export default class XeroDataSyncManager {
      * @returns {Promise}
      */
     async syncData() {
-        this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
+        if (this.activeSession) {
+            return;
+        }
 
         try {
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
+            this.activeSession = new SyncDataSessionModel(null, 'ACTIVE', Date.now());
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+            
             await Promise.all([
-                syncAccounts(this.serverContext, this.xeroContext),
-                syncVendors(this.serverContext, this.xeroContext)
+                syncAccounts(this.activeSession, this.serverContext, this.xeroContext),
+                syncVendors(this.activeSession, this.serverContext, this.xeroContext)
             ]);
 
             await new Promise(resolve => {
@@ -125,7 +142,12 @@ export default class XeroDataSyncManager {
             console.error(error);
         }
         finally {
-            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE);
+            const completedSession = this.activeSession;
+
+            this.activeSession.status = 'COMPLETE';
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+            this.activeSession = null;
+            this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE, completedSession);
         }
     }
 }

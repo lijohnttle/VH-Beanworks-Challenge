@@ -9,22 +9,24 @@ import ServerContext from '../server/ServerContext';
 function subscribe(serverContext) {
     const { eventEmitter} = serverContext;
 
-    eventEmitter.on(EventTypes.LOG_SYNC_DATA, syncLogRecord => {
-        const { storages } = serverContext;
-
-        storages.syncLogStorage.persist([ syncLogRecord ]);
-    });
-
     eventEmitter.on(EventTypes.SYNC_DATA_STARTED, () => {
-        const { io} = serverContext;
+        const { io } = serverContext;
 
         io.emit(NotificationType.SYNC_DATA_STARTED);
     });
 
-    eventEmitter.on(EventTypes.SYNC_DATA_COMPLETE, () => {
-        const { io} = serverContext;
+    eventEmitter.on(EventTypes.SYNC_DATA_UPDATE, session => {
+        const { storages, io } = serverContext;
 
-        io.emit(NotificationType.SYNC_DATA_COMPLETE);
+        storages.syncDataSessionsStorage.persist([ session ]);
+        
+        io.emit(NotificationType.SYNC_DATA_UPDATE, session);
+    });
+
+    eventEmitter.on(EventTypes.SYNC_DATA_COMPLETE, session => {
+        const { io } = serverContext;
+
+        io.emit(NotificationType.SYNC_DATA_COMPLETE, session);
     });
 }
 
