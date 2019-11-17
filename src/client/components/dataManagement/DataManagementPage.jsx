@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Button, Box, Table, TableBody, TableRow, TableCell, Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
+import SyncDataService from '../../services/SyncDataService';
 
 const SyncTableCell = withStyles(theme => ({
     head: {
@@ -17,6 +18,16 @@ const SyncTableRow = withStyles(theme => ({
 }))(TableRow);
 
 class DataManagementPage extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.syncData = this.syncData.bind(this);
+    }
+
+    async syncData() {
+        await SyncDataService.syncDataFromErp();
+    }
+
     render() {
         return (
             <div>
@@ -28,7 +39,7 @@ class DataManagementPage extends React.Component {
                 
                 <Box p={4}>
                     <Box mb={4}>
-                        <Button variant="contained" color="primary">
+                        <Button variant="contained" color="primary" onClick={this.syncData}>
                             Sync
                         </Button>
                     </Box>
