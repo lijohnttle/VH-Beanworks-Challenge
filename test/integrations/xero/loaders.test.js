@@ -1,5 +1,5 @@
-import loaders from '../../../src/integrations/xero/loaders';
 import JestMock from 'jest-mock';
+import { XeroAccountLoader, XeroVendorLoader } from '../../../src/integrations/xero/loaders';
 
 describe('Loaders', () => {
     [0, 3].forEach(accountCount =>
@@ -13,8 +13,9 @@ describe('Loaders', () => {
                     }
                 }
             };
+            const loader = new XeroAccountLoader();
 
-            const accounts = await loaders.accountLoader.load(connection);
+            const accounts = await loader.load(connection);
 
             expect(getAccountsMock.mock.calls.length).toBe(1);
             expect(accounts.length).toBe(cccountsResponse.Accounts.length);
@@ -31,8 +32,9 @@ describe('Loaders', () => {
                     }
                 }
             };
+            const loader = new XeroVendorLoader();
 
-            const vendors = await loaders.vendorLoader.load(connection);
+            const vendors = await loader.load(connection);
 
             expect(getVendorsMock.mock.calls.length).toBe(1);
             expect(vendors.length).toBe(vendorsResponse.Contacts.length);

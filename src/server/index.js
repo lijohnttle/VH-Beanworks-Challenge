@@ -7,7 +7,6 @@ import { EventEmitter } from 'events';
 import graphqlHTTP from 'express-graphql';
 import { schema } from '../api/schema';
 import { useResolvers } from '../api/resolvers';
-import loaders from '../integrations/xero/loaders';
 import { useStorages } from '../persistence/mongodb';
 import XeroDataSyncManager from '../services/XeroDataSyncManager';
 import ServerContext from './ServerContext';
@@ -27,7 +26,10 @@ const serverContext = new ServerContext(config, useStorages(config), eventEmitte
 const app = express();
 
 const xeroConnection = new XeroConnection(config.xero);
-const xeroContext = new XeroConnectionContext(loaders, xeroConnection);
+const xeroContext = new XeroConnectionContext({
+    accountLoader: new XeroAccountLoader(),
+    vendorLoader: new XeroVendorLoader()
+}, xeroConnection);
 const syncManager = new XeroDataSyncManager(serverContext, xeroContext);
 
 
