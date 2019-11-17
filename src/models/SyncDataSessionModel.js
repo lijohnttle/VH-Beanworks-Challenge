@@ -1,11 +1,11 @@
 import SyncLogRecordModel from './SyncLogRecordModel';
 
 export default class SyncDataSessionModel {
-    constructor(sessionID, status, startedUTC) {
+    constructor(sessionID, status, startedUTC, syncLog = []) {
         this.sessionID = sessionID;
         this.status = status;
         this.startedUTC = startedUTC;
-        this.syncLog = [];
+        this.syncLog = syncLog;
     }
 
     /**

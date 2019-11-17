@@ -8,7 +8,7 @@ import graphqlHTTP from 'express-graphql';
 import { schema } from '../api/schema';
 import { useResolvers } from '../api/resolvers';
 import loaders from '../integrations/xero/loaders';
-import storages from '../persistence/memory';
+import { useStorages } from '../persistence/mongodb';
 import XeroDataSyncManager from '../services/XeroDataSyncManager';
 import ServerContext from './ServerContext';
 import NotificationsContext from '../services/NotificationsContext';
@@ -24,7 +24,7 @@ const eventEmitter = new EventEmitter();
 // app
 const config = loadConfig(process.env.NODE_ENV);
 const notificationsContext = new NotificationsContext();
-const serverContext = new ServerContext(config, storages, eventEmitter, notificationsContext);
+const serverContext = new ServerContext(config, useStorages(config), eventEmitter, notificationsContext);
 const app = express();
 
 const xeroConnection = new XeroConnection(config.xero);

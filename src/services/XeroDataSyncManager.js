@@ -7,6 +7,7 @@ import SyncDataItem from '../constants/SyncDataItem';
 import SyncLogRecordModel from '../models/SyncLogRecordModel';
 import SyncCompleteStatus from '../models/SyncCompleteStatus';
 import SyncDataSessionModel from '../models/SyncDataSessionModel';
+import uuidv1 from 'uuid/v1';
 
 
 /**
@@ -126,7 +127,7 @@ export default class XeroDataSyncManager {
 
         try {
             this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
-            this.activeSession = new SyncDataSessionModel(null, 'ACTIVE', Date.now());
+            this.activeSession = new SyncDataSessionModel(uuidv1(), 'ACTIVE', Date.now());
             this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
             
             await Promise.all([

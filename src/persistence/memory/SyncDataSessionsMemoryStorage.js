@@ -3,7 +3,7 @@ import SyncDataSessionModel from "../../models/SyncDataSessionModel";
 class SyncDataSessionsMemoryStorage {
     constructor() {
         this.items = [];
-        this.sessionCounter = 0;
+        this.sessionCounter = 1;
     }
 
     /**

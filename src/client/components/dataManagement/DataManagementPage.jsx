@@ -74,7 +74,7 @@ class DataManagementPage extends React.Component {
             this._socket.on(NotificationType.SYNC_DATA_UPDATE, session => {
                 this.setState(state => {
                     const sessions = state.sessions.slice();
-
+                    
                     this.updateSyncDataSession(session, sessions);
 
                     return {
@@ -95,6 +95,7 @@ class DataManagementPage extends React.Component {
                     };
                 });
             });
+
             this.setState({
                 isLoading: false,
                 isSyncRunning: syncState.isSyncRunning,
