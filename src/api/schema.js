@@ -1,8 +1,13 @@
 import { buildSchema } from 'graphql';
 
 const schema = buildSchema(`
+    type SyncDataState {
+        notificationsEndpoint: String!
+        isSyncRunning: Boolean!
+    }
+
     type Query {
-        test: String
+        getSyncDataState: SyncDataState
     }
 
     type Mutation {

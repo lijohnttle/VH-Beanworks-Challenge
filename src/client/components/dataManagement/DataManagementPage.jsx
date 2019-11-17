@@ -1,8 +1,9 @@
 import React from 'react';
 import socketIoClient from 'socket.io-client';
-import { Typography, Button, Box, Table, TableBody, TableRow, TableCell, Paper } from '@material-ui/core';
+import { Typography, Button, Box, Table, TableBody, TableRow, TableCell, CircularProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import SyncDataService from '../../services/SyncDataService';
+import NotificationType from '../../../constants/NotificationType';
 
 const SyncTableCell = withStyles(theme => ({
     head: {
@@ -23,6 +24,8 @@ class DataManagementPage extends React.Component {
         super(props);
 
         this.state = {
+            isLoading: true,
+            isSyncRunning: false,
             socketEndpoint: {
                 response: false,
                 endpoint: "http://127.0.0.1:3000"
@@ -34,15 +37,43 @@ class DataManagementPage extends React.Component {
     }
 
     async syncData() {
-        await SyncDataService.syncDataFromErp();
+        try {
+            await SyncDataService.syncDataFromErp();
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
-    componentDidMount() {
-        const { endpoint } = this.state.socketEndpoint;
-        this._socket = socketIoClient(endpoint);
-        this._socket.on('FromAPI', data => {
-            console.log('received data');
-        });
+    async componentDidMount() {
+        try {
+            const syncState = await SyncDataService.getSyncDataState();
+            const endpoint = {
+                response: false,
+                endpoint: syncState.notificationsEndpoint
+            }
+            
+            this._socket = socketIoClient(endpoint);
+            this._socket.on(NotificationType.SYNC_DATA_STARTED, () => {
+                this.setState({
+                    isSyncRunning: true
+                });
+                console.log('Sync started');
+            });
+            this._socket.on(NotificationType.SYNC_DATA_COMPLETE, () => {
+                this.setState({
+                    isSyncRunning: false
+                });
+                console.log('Sync complete');
+            });
+            this.setState({
+                isLoading: false,
+                isSyncRunning: syncState.isSyncRunning
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
     componentWillUnmount() {
@@ -59,10 +90,20 @@ class DataManagementPage extends React.Component {
                 </Box>
                 
                 <Box p={4}>
-                    <Box mb={4}>
-                        <Button variant="contained" color="primary" onClick={this.syncData}>
+                    <Box mb={4} display="flex" flexDirection="row" alignItems="center">
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={this.state.isLoading || this.state.isSyncRunning}
+                            onClick={this.syncData}>
+                            
                             Sync
                         </Button>
+
+                        {this.state.isSyncRunning ? (
+                            <Box ml={2}>
+                                <CircularProgress size="1rem" color="secondary" thickness={5} />
+                            </Box>) : null}
                     </Box>
 
                     <Typography variant="h2" paragraph>
