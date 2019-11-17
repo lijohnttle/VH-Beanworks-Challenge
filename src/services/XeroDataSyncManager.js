@@ -29,6 +29,8 @@ class XeroDataSyncManager {
             this.syncAccounts(),
             this.syncVendors(),
         ]);
+
+        console.log(this.storages.accountStorage.items.length);
     }
 
     /**

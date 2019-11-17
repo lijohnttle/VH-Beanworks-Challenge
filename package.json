@@ -6,6 +6,10 @@
   "scripts": {
     "build-server": "webpack --config webpack/server.dev.config.js",
     "build-server:prod": "webpack --config webpack/server.prod.config.js",
+    "build-client": "webpack --config webpack/client.dev.config.js",
+    "build-client:prod": "webpack --config webpack/client.prod.config.js",
+    "build": "npm run build-server && npm run build-client",
+    "build:prod": "npm run build-server:prod && npm run build-client:prod",
     "start": "node ./dist/index.js",
     "test": "jest"
   },
