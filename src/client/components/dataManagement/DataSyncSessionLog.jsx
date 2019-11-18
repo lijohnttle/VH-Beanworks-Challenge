@@ -23,7 +23,7 @@ function getMessageText(record) {
     return '';
 }
 
-const SyncDataSessionLog = ({ syncLog, close }) => {
+const DataSyncSessionLog = ({ syncLog, close }) => {
     return (
         <div>
             <Box ml={4}>
@@ -53,4 +53,4 @@ const SyncDataSessionLog = ({ syncLog, close }) => {
     );
 }
 
-export default SyncDataSessionLog;
+export default DataSyncSessionLog;

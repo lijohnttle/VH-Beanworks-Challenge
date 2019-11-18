@@ -3,8 +3,8 @@ import socketIoClient from 'socket.io-client';
 import { Typography, Button, Box, CircularProgress } from '@material-ui/core';
 import DataSyncService from '../../services/DataSyncService';
 import NotificationType from '../../../constants/NotificationType';
-import SyncDataSessionList from './SyncDataSessionList';
-import SyncDataSessionLog from './SyncDataSessionLog';
+import DataSyncSessionList from './DataSyncSessionList';
+import DataSyncSessionLog from './DataSyncSessionLog';
 
 class DataManagementPage extends React.Component {
     constructor(props) {
@@ -175,15 +175,16 @@ class DataManagementPage extends React.Component {
 
                     <Box display="flex" flexDirection="row">
                         <Box flex={1}>
-                            <SyncDataSessionList
+                            <DataSyncSessionList
                                 sessions={this.state.sessions}
                                 selectedSessionId={this.state.selectedSessionId}
-                                showSessionLogs={this.showSessionLogs} />
+                                showSessionLogs={this.showSessionLogs}
+                                closeSessionLogs={this.closeSessionLogs} />
                         </Box>
 
                         {this.state.selectedSessionId ? (
                             <Box flex={1}>
-                                <SyncDataSessionLog syncLog={this.state.selectedSessionLogs} close={this.closeSessionLogs} />
+                                <DataSyncSessionLog syncLog={this.state.selectedSessionLogs} close={this.closeSessionLogs} />
                             </Box>
                         ) : null}
                     </Box>

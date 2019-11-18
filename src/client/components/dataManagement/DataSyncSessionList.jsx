@@ -35,15 +35,16 @@ const renderSessionStatus = (status) => {
     return status;
 };
 
-const SyncDataSessionList = ({ sessions, selectedSessionId, showSessionLogs }) => {
+const DataSyncSessionList = ({ sessions, selectedSessionId, showSessionLogs, closeSessionLogs }) => {
     return (
         <div>
             <Table>
                 <TableBody>
                     {sessions.map(session => {
                         const classes = { };
+                        const isSelected = selectedSessionId === session.sessionID;
 
-                        if (selectedSessionId === session.sessionID) {
+                        if (isSelected) {
                             classes.root = 'selected';
                         }
 
@@ -57,7 +58,10 @@ const SyncDataSessionList = ({ sessions, selectedSessionId, showSessionLogs }) =
                                 </SyncTableCell>
                                 <SyncTableCell>
                                     <Tooltip title="Show logs..." aria-label="show-logs">
-                                        <Fab color="primary" size="small" onClick={() => showSessionLogs(session)}>
+                                        <Fab
+                                            color={isSelected ? "default" : "primary"}
+                                            size="small" 
+                                            onClick={() => isSelected ? closeSessionLogs() : showSessionLogs(session)}>
                                             <ListAltIcon />
                                         </Fab>
                                     </Tooltip>
@@ -71,4 +75,4 @@ const SyncDataSessionList = ({ sessions, selectedSessionId, showSessionLogs }) =
     );
 }
 
-export default SyncDataSessionList;
+export default DataSyncSessionList;
