@@ -1,15 +1,49 @@
 import XeroDataImporter from '../dataImport/xero/XeroDataImporter';
-import DataImportType from '../dataImport/DataImportType';
+import DataImportItem from '../dataImport/DataImportItem';
 import DataImportStatus from '../dataImport/DataImportStatus';
 import ServerContext from '../../server/ServerContext';
 import EventTypes from '../../events/EventType';
 import SyncDataOperation from '../../constants/SyncDataOperation';
-import SyncDataState from '../../constants/SyncDataState';
-import SyncDataItem from '../../constants/SyncDataItem';
+import DataSyncState from './DataSyncState';
+import DataSyncItem from './DataSyncItem';
 import SyncLogRecordModel from '../../models/SyncLogRecordModel';
 import SyncCompleteStatus from '../../models/SyncCompleteStatus';
 import SyncDataSessionModel from '../../models/SyncDataSessionModel';
+import DataSyncSessionStatus from '../../models/DataSyncSessionStatus';
 import uuidv1 from 'uuid/v1';
+
+/**
+ * 
+ * @param {String} dataImportType
+ * 
+ * @returns {String}
+ */
+function convertDataImportItemToDataSyncItem(dataImportItem) {
+    switch (dataImportItem) {
+        case DataImportItem.ACCOUNT_LIST:
+            return DataSyncItem.ACCOUNT;
+
+        case DataImportItem.VENDOR_LIST:
+            return DataSyncItem.VENDOR;
+    }
+
+    throw new Error(`Uknown DataImportItem: ${dataImportItem}`);
+}
+
+/**
+ * 
+ * @param {String} dataSyncItem
+ * 
+ * @returns {Object}
+ */
+function getStorageByDataSyncItem(dataSyncItem, storages) {
+    if (dataSyncItem === DataSyncItem.ACCOUNT) {
+        return storages.accountStorage;
+    }
+    else if (dataSyncItem === DataSyncItem.VENDOR) {
+        return storages.vendorStorage;
+    }
+}
 
 
 export default class DataSyncManager {
@@ -33,68 +67,60 @@ export default class DataSyncManager {
             return;
         }
 
+        const { eventEmitter } = this.serverContext;
+
         try {
             const self = this;
-            
-            this._startSync();
 
-            await this.dataImporter.import(async (dataType, status, data, error) => {
+            // start data synchronization process
+            eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
+            this.activeSession = new SyncDataSessionModel(uuidv1(), DataSyncSessionStatus.ACTIVE, Date.now());
+            eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+            
+            // import data
+            await this.dataImporter.import(async (importItem, status, data, error) => {
                 if (error) {
                     console.error(error);
                     return;
                 }
 
-                if (dataType === DataImportType.ACCOUNTS) {
-                    if (status === DataImportStatus.STARTING) {
-                        self._startSyncList(SyncDataItem.ACCOUNT);
-                    }
-                    else {
-                        await self._completeSyncList(SyncDataItem.ACCOUNT, data, this.serverContext.storages.accountStorage);
-                    }
+                const dataSyncItem = convertDataImportItemToDataSyncItem(importItem);
+
+                if (status === DataImportStatus.STARTING) {
+                    self._startSyncList(dataSyncItem);
                 }
-                else if (dataType === DataImportType.VENDORS) {
-                    if (status === DataImportStatus.STARTING) {
-                        self._startSyncList(SyncDataItem.VENDOR);
-                    }
-                    else {
-                        await self._completeSyncList(SyncDataItem.VENDOR, data, this.serverContext.storages.vendorStorage);
-                    }
+                else {
+                    await self._completeSyncList(dataSyncItem, data);
                 }
             });
+
+            this.activeSession.status = DataSyncSessionStatus.COMPLETE;
         }
         catch (error) {
             console.error(error);
+
+            this.activeSession.status = DataSyncSessionStatus.ERROR;
         }
         finally {
-            this._completeSync();
+            // complete data synchronization process
+            const completedSession = this.activeSession;
+            this.activeSession = null;
+            eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE, completedSession);
         }
     }
-
-    _startSync() {
-        this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
-        this.activeSession = new SyncDataSessionModel(uuidv1(), 'ACTIVE', Date.now());
-        this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
-    }
-
-    _completeSync() {
-        const completedSession = this.activeSession;
-        completedSession.status = 'COMPLETE'; 
-        this.activeSession = null;
-        this.serverContext.eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE, completedSession);
-    };
 
     /**
      * 
-     * @param {SyncDataItem} item
+     * @param {DataSyncItem} dataSyncItem
      */
-    _startSyncList(item) {
+    _startSyncList(dataSyncItem) {
         const { eventEmitter } = this.serverContext;
 
         this.activeSession.addLogRecord(new SyncLogRecordModel(
             Date.now(),
             SyncDataOperation.SYNC_FROM_ERP,
-            SyncDataState.START,
-            item
+            DataSyncState.START,
+            dataSyncItem
         ));
 
         eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
@@ -102,18 +128,19 @@ export default class DataSyncManager {
 
     /**
      * 
-     * @param {SyncDataItem} item
+     * @param {DataSyncItem} dataSyncItem
      * @param {Object[]} data
-     * @param {Object} storage
      * 
      * @returns {Promise}
      */
-    async _completeSyncList(item, data, storage) {
+    async _completeSyncList(dataSyncItem, data) {
         const { eventEmitter } = this.serverContext;
 
         let completeStatus = null;
+        const storage = getStorageByDataSyncItem(dataSyncItem, this.serverContext.storages);
 
         try {
+            
             await storage.persist(data);
         }
         catch (error) {
@@ -125,8 +152,8 @@ export default class DataSyncManager {
             this.activeSession.addLogRecord(new SyncLogRecordModel(
                 Date.now(),
                 SyncDataOperation.SYNC_FROM_ERP,
-                SyncDataState.END,
-                item,
+                DataSyncState.END,
+                dataSyncItem,
                 completeStatus
             ));
 

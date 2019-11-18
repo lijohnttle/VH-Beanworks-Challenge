@@ -1,11 +1,11 @@
 import JestMock from 'jest-mock';
 import { XeroAccountLoader, XeroVendorLoader } from '../../../../src/services/dataImport/xero/loaders';
 
-describe('Loaders', () => {
+describe('loading data from Xero', () => {
     [0, 3].forEach(accountCount =>
-        it(`should test that account models count === received accounts count (${accountCount})`, async () => {
-            const cccountsResponse = generateAccountsResponse(accountCount);
-            const getAccountsMock = JestMock.fn(() => Promise.resolve(cccountsResponse));
+        it(`loaded accounts count === sent accounts count (${accountCount})`, async () => {
+            const accountsResponse = generateAccountsResponse(accountCount);
+            const getAccountsMock = JestMock.fn(() => Promise.resolve(accountsResponse));
             const connection = {
                 client: {
                     accounts: {
@@ -15,14 +15,17 @@ describe('Loaders', () => {
             };
             const loader = new XeroAccountLoader();
 
+
             const accounts = await loader.load(connection);
 
+
             expect(getAccountsMock.mock.calls.length).toBe(1);
-            expect(accounts.length).toBe(cccountsResponse.Accounts.length);
-    }));
+            expect(accounts.length).toBe(accountsResponse.Accounts.length);
+        })
+    );
 
     [0, 3].forEach(vendorCount =>
-        it(`should test that vendor models count === received vendors count (${vendorCount})`, async () => {
+        it(`loaded vendors count === sent vendors count (${vendorCount})`, async () => {
             const vendorsResponse = generateVendorsResponse(vendorCount);
             const getVendorsMock = JestMock.fn(() => Promise.resolve(vendorsResponse));
             const connection = {
@@ -34,11 +37,14 @@ describe('Loaders', () => {
             };
             const loader = new XeroVendorLoader();
 
+
             const vendors = await loader.load(connection);
+
 
             expect(getVendorsMock.mock.calls.length).toBe(1);
             expect(vendors.length).toBe(vendorsResponse.Contacts.length);
-    }));
+        })
+    );
 });
 
 function generateAccountsResponse(count) {

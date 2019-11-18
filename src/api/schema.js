@@ -15,14 +15,14 @@ const schema = buildSchema(`
         syncLog: [SyncLogRecord]
     }
 
-    type SyncDataState {
+    type DataSyncState {
         notificationsEndpoint: String!
         isSyncRunning: Boolean!
         sessions: [SyncDataSession]
     }
 
     type Query {
-        getSyncDataState: SyncDataState
+        getDataSyncState: DataSyncState
     }
 
     type Mutation {

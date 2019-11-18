@@ -1,13 +1,13 @@
 import { XeroAccountLoader, XeroVendorLoader } from './loaders';
 import XeroConnection from './XeroConnection';
-import DataImportType from '../DataImportType';
+import DataImportItem from '../DataImportItem';
 import DataImportStatus from '../DataImportStatus';
 
 /**
  * 
  * @callback dataLoadedCallback
  * 
- * @param {String} dataType
+ * @param {String} importItem
  * @param {String} status
  * @param {Object[]} data
  * @param {Error} error 
@@ -24,7 +24,7 @@ import DataImportStatus from '../DataImportStatus';
  */
 async function loadData(dataType, dataLoader, connection, dataLoadedCallback) {
     try {
-        await dataLoadedCallback(dataType, DataImportStatus.STARTING, data, null);
+        await dataLoadedCallback(dataType, DataImportStatus.STARTING, null, null);
 
         const data = await dataLoader.load(connection);
 
@@ -56,8 +56,8 @@ class XeroDataImporter {
     async import(dataLoadedCallback) {
         await Promise.all(
             [
-                loadData(DataImportType.ACCOUNTS, this.accountLoader, this.connection, dataLoadedCallback),
-                loadData(DataImportType.VENDORS, this.vendorLoader, this.connection, dataLoadedCallback)
+                loadData(DataImportItem.ACCOUNT_LIST, this.accountLoader, this.connection, dataLoadedCallback),
+                loadData(DataImportItem.VENDOR_LIST, this.vendorLoader, this.connection, dataLoadedCallback)
             ]
         );
     }

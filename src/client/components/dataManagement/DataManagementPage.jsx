@@ -1,7 +1,7 @@
 import React from 'react';
 import socketIoClient from 'socket.io-client';
 import { Typography, Button, Box, CircularProgress } from '@material-ui/core';
-import SyncDataService from '../../services/SyncDataService';
+import DataSyncService from '../../services/DataSyncService';
 import NotificationType from '../../../constants/NotificationType';
 import SyncDataSessionList from './SyncDataSessionList';
 import SyncDataSessionLog from './SyncDataSessionLog';
@@ -27,7 +27,7 @@ class DataManagementPage extends React.Component {
 
     async syncData() {
         try {
-            await SyncDataService.syncDataFromErp();
+            await DataSyncService.syncDataFromErp();
         }
         catch (error) {
             console.error(error);
@@ -62,7 +62,7 @@ class DataManagementPage extends React.Component {
 
     async componentDidMount() {
         try {
-            const syncState = await SyncDataService.getSyncDataState();
+            const syncState = await DataSyncService.getDataSyncState();
             const endpoint = {
                 response: false,
                 reconnect: true,

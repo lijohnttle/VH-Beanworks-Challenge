@@ -7,7 +7,7 @@ import DataSyncManager from '../services/dataSync/DataSyncManager';
  */
 function useResolvers(context, syncManager) {
     const resolvers = {
-        getSyncDataState: async () => {
+        getDataSyncState: async () => {
             const sessions = await context.storages.syncDataSessionsStorage.getItems();
 
             return {

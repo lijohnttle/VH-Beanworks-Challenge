@@ -4,7 +4,7 @@ import { graphqlApi } from './graphqlApi';
 
 const GET_SYNC_DATA_STATE = `
     {
-        getSyncDataState {
+        getDataSyncState {
             notificationsEndpoint
             isSyncRunning
             sessions {
@@ -31,10 +31,10 @@ const SYNC_DATA_FROM_ERP = `
 
 // Api calls
 
-async function getSyncDataState() {
+async function getDataSyncState() {
     const response = await graphqlApi.post('', { query: GET_SYNC_DATA_STATE });
-    const syncDataState = response.data.data.getSyncDataState;
-    return syncDataState;
+    const dataSyncState = response.data.data.getDataSyncState;
+    return dataSyncState;
 }
 
 async function syncDataFromErp() {
@@ -43,6 +43,6 @@ async function syncDataFromErp() {
 
 
 export default {
-    getSyncDataState,
+    getDataSyncState,
     syncDataFromErp
 };
