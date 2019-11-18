@@ -1,9 +1,9 @@
 import ServerContext from '../server/ServerContext';
-import XeroDataSyncManager from '../services/XeroDataSyncManager';
+import DataSyncManager from '../services/DataSyncManager';
 
 /**
  * @param {ServerContext} context
- * @param {XeroDataSyncManager} syncManager 
+ * @param {DataSyncManager} syncManager 
  */
 function useResolvers(context, syncManager) {
     const resolvers = {

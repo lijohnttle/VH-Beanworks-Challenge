@@ -24,7 +24,9 @@ function subscribe(serverContext) {
     });
 
     eventEmitter.on(EventTypes.SYNC_DATA_COMPLETE, session => {
-        const { io } = serverContext;
+        const { storages, io } = serverContext;
+
+        storages.syncDataSessionsStorage.persist([ session ]);
 
         io.emit(NotificationType.SYNC_DATA_COMPLETE, session);
     });

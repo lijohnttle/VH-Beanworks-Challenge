@@ -2,8 +2,6 @@ import React from 'react';
 import { Typography, Box } from '@material-ui/core';
 
 function getMessageText(record) {
-    console.log(record);
-
     if (record.item === 'Account') {
         if (record.state === 'START') {
             return 'Starting import of accounts'

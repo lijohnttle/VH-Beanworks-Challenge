@@ -2,17 +2,18 @@ import path from 'path';
 import express from 'express';
 import socketIo from 'socket.io';
 import { loadConfig } from './config';
-import XeroConnection from '../integrations/xero/XeroConnection';
+import { XeroAccountLoader, XeroVendorLoader } from '../dataImport/xero/loaders';
+import XeroConnection from '../dataImport/xero/XeroConnection';
 import { EventEmitter } from 'events';
 import graphqlHTTP from 'express-graphql';
 import { schema } from '../api/schema';
 import { useResolvers } from '../api/resolvers';
 import { useStorages } from '../persistence/mongodb';
-import XeroDataSyncManager from '../services/XeroDataSyncManager';
+import DataSyncManager from '../services/DataSyncManager';
 import ServerContext from './ServerContext';
-import XeroConnectionContext from '../services/XeroConnectionContext';
 import SyncDataEventHandler from '../events/SyncDataEventHandler';
 import NotificationType from '../constants/NotificationType';
+import XeroDataImporter from '../dataImport/xero/XeroDataImporter';
 
 
 // utils
@@ -26,11 +27,8 @@ const serverContext = new ServerContext(config, useStorages(config), eventEmitte
 const app = express();
 
 const xeroConnection = new XeroConnection(config.xero);
-const xeroContext = new XeroConnectionContext({
-    accountLoader: new XeroAccountLoader(),
-    vendorLoader: new XeroVendorLoader()
-}, xeroConnection);
-const syncManager = new XeroDataSyncManager(serverContext, xeroContext);
+const importer = new XeroDataImporter(xeroConnection, new XeroAccountLoader(), new XeroVendorLoader())
+const syncManager = new DataSyncManager(serverContext, importer);
 
 
 // event handlers
