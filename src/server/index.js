@@ -44,6 +44,11 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }));
 
+app.get('/archives/:sessionId', async (req, res) => {
+    const data = await syncManager.getArchive(req.params.sessionId);
+    res.json(data);
+});
+
 app.get('/', (_, res) => {
     res.setHeader('content-type', 'text/html');
     res.sendFile(path.resolve(rootPath, 'public/index.html'));

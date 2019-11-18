@@ -1,8 +1,8 @@
 import React from 'react';
-import { Table, TableBody, TableRow, TableCell,Fab, Tooltip, CircularProgress } from '@material-ui/core';
+import { Table, TableBody, TableRow, TableCell,Fab, Tooltip, CircularProgress, IconButton } from '@material-ui/core';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import CheckIcon from '@material-ui/icons/Check';
-import CachedIcon from '@material-ui/icons/Cached';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import { withStyles } from '@material-ui/styles';
 import DataSyncSessionStatus from '../../../models/DataSyncSessionStatus';
 
@@ -50,13 +50,24 @@ const DataSyncSessionList = ({ sessions, selectedSessionId, showSessionLogs, clo
 
                         return (
                             <SyncTableRow key={session.sessionID} classes={classes}>
-                                <SyncTableCell>
+                                <SyncTableCell align="left">
                                     {renderSessionStatus(session.status)}
                                 </SyncTableCell>
                                 <SyncTableCell>
                                     {new Date(session.startedUTC).toLocaleString()}
                                 </SyncTableCell>
-                                <SyncTableCell>
+                                <SyncTableCell align="right">
+                                    <Tooltip title="Download data set" aria-label="download-data">
+                                        <IconButton
+                                            color={isSelected ? "default" : "primary"}
+                                            size="small" 
+                                            href={`/archives/${session.sessionID}`}
+                                            target="__blank">
+                                            <GetAppIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </SyncTableCell>
+                                <SyncTableCell align="right">
                                     <Tooltip title="Show logs..." aria-label="show-logs">
                                         <Fab
                                             color={isSelected ? "default" : "primary"}

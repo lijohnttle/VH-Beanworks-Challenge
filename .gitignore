@@ -3,4 +3,5 @@ package-lock.json
 
 node_modules/
 dist/
+archives/
 public/bundle.js

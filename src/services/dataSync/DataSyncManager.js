@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import XeroDataImporter from '../dataImport/xero/XeroDataImporter';
 import DataImportItem from '../dataImport/DataImportItem';
 import DataImportStatus from '../dataImport/DataImportStatus';
@@ -109,6 +111,28 @@ export default class DataSyncManager {
         }
     }
 
+    async getArchive(sessionID) {
+        const archiveDirectory = path.resolve(process.cwd(), 'archives');
+        const archiveFileName = `${sessionID}.json`;
+        const archivePath = path.resolve(archiveDirectory, archiveFileName);
+
+        return new Promise((resolve, reject) => {
+            if (fs.existsSync(archivePath)) {
+                fs.readFile(archivePath, 'utf8', (err, data) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(data);
+                    }
+                });
+            }
+            else {
+                resolve('');
+            }
+        });
+    }
+
     /**
      * 
      * @param {DataSyncItem} dataSyncItem
@@ -140,8 +164,9 @@ export default class DataSyncManager {
         const storage = getStorageByDataSyncItem(dataSyncItem, this.serverContext.storages);
 
         try {
-            
             await storage.persist(data);
+            
+            this._archive(data);
         }
         catch (error) {
             completeStatus = new DataSyncCompleteStatus(error);
@@ -159,5 +184,24 @@ export default class DataSyncManager {
 
             eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
         }
+    }
+
+    _archive(data) {
+        const archiveDirectory = path.resolve(process.cwd(), 'archives');
+        const archiveFileName = `${this.activeSession.sessionID}.json`;
+        const archivePath = path.resolve(archiveDirectory, archiveFileName);
+
+        fs.mkdir(archiveDirectory, { recursive: true }, (err) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                fs.writeFile(archivePath, JSON.stringify(data), err => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
     }
 }
