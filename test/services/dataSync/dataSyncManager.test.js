@@ -36,7 +36,7 @@ describe('synchronizing data', () => {
 
 
         expect(eventEmitterEmitMock.mock.calls.length).toBe(3);
-        expect(eventEmitterEmitMock.mock.calls[0][0]).toBe(EventType.SYNC_DATA_STARTED);
+        expect(eventEmitterEmitMock.mock.calls[0][0]).toBe(EventType.SYNC_DATA_STARTING);
         expect(eventEmitterEmitMock.mock.calls[1][0]).toBe(EventType.SYNC_DATA_UPDATE);
         expect(eventEmitterEmitMock.mock.calls[2][0]).toBe(EventType.SYNC_DATA_COMPLETE);
         expect(session.status).toBe(DataSyncSessionStatus.COMPLETE);

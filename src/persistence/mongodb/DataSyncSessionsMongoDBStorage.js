@@ -19,31 +19,96 @@ class DataSyncSessionsMongoDBStorage {
                     return;
                 }
 
-                var bulkUpdateOps = items.map(doc => {
-                    return {
-                        "updateOne": {
-                            "filter": { "_id": doc.sessionID },
-                            "update": {
-                                "$set": {
-                                    "_id": doc.sessionID,
-                                    "status": doc.status,
-                                    "startedUTC": doc.startedUTC,
-                                    "syncLog": doc.syncLog
+                items.forEach(doc => {
+                    (function update() {
+                        collection.updateOne(
+                            { "_id": doc.sessionID },
+                            {"$set": {
+                                "_id": doc.sessionID,
+                                "status": doc.status,
+                                "startedUTC": doc.startedUTC,
+                                "syncLog": doc.syncLog
                                 }
                             },
-                            "upsert": true
+                            {upsert: true, safe: false},
+                            (err) => {
+                                if (err) {
+                                    if (err.code == 11000) {
+                                        update();
+                                        return;
+                                    }
+
+                                    console.log(err);
+                                }
+                            });
+                    })();
+                });
+                
+                resolve();
+            });
+        });
+    }
+
+    /**
+     * @param {DataSyncSessionModel[]} items
+     * @returns {Promise}
+     */
+    persistSyncLog(items) {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connectToDb;
+
+            db.collection('syncSessions', (error, collection) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                items.forEach(doc => {
+                    collection.updateOne(
+                        { "_id": doc.sessionID },
+                        { "$set": { "syncLog": doc.syncLog } },
+                        { upsert: false, safe: false },
+                        (err) => {
+                            if (err) {
+                                console.log(err);
+                            }
                         }
-                    };
+                    );
                 });
 
-                collection.bulkWrite(bulkUpdateOps, (error, _) => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
+                resolve();
+            });
+        });
+    }
 
-                    resolve();
+        /**
+     * @param {DataSyncSessionModel[]} items
+     * @returns {Promise}
+     */
+    persistStatus(items) {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connectToDb;
+
+            db.collection('syncSessions', (error, collection) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                items.forEach(doc => {
+                    collection.updateOne(
+                        { "_id": doc.sessionID },
+                        { "$set": { "status": doc.status } },
+                        { upsert: false, safe: false },
+                        (err) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                        }
+                    );
                 });
+
+                resolve();
             });
         });
     }

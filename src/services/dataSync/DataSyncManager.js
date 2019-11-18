@@ -73,9 +73,9 @@ export default class DataSyncManager {
             const self = this;
 
             // start data synchronization process
-            eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
+            eventEmitter.emit(EventTypes.SYNC_DATA_STARTING);
             this.activeSession = new DataSyncSessionModel(uuidv1(), DataSyncSessionStatus.ACTIVE, Date.now());
-            eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+            eventEmitter.emit(EventTypes.SYNC_DATA_STARTED, this.activeSession);
             
             // import data
             await this.dataImporter.import(async (importItem, status, data, error) => {

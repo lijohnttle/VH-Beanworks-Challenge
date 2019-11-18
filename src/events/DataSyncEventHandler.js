@@ -9,13 +9,13 @@ import ServerContext from '../server/ServerContext';
 export function subscribe(serverContext) {
     const { eventEmitter} = serverContext;
 
-    eventEmitter.on(EventTypes.SYNC_DATA_STARTED, () => {
+    eventEmitter.on(EventTypes.SYNC_DATA_STARTING, () => {
         const { io } = serverContext;
 
         io.emit(NotificationType.SYNC_DATA_STARTED);
     });
 
-    eventEmitter.on(EventTypes.SYNC_DATA_UPDATE, session => {
+    eventEmitter.on(EventTypes.SYNC_DATA_STARTED, session => {
         const { storages, io } = serverContext;
 
         storages.dataSyncSessionsStorage.persist([ session ]);
@@ -23,10 +23,18 @@ export function subscribe(serverContext) {
         io.emit(NotificationType.SYNC_DATA_UPDATE, session);
     });
 
+    eventEmitter.on(EventTypes.SYNC_DATA_UPDATE, session => {
+        const { storages, io } = serverContext;
+
+        storages.dataSyncSessionsStorage.persistSyncLog([ session ]);
+        
+        io.emit(NotificationType.SYNC_DATA_UPDATE, session);
+    });
+
     eventEmitter.on(EventTypes.SYNC_DATA_COMPLETE, session => {
         const { storages, io } = serverContext;
 
-        storages.dataSyncSessionsStorage.persist([ session ]);
+        storages.dataSyncSessionsStorage.persistStatus([ session ]);
 
         io.emit(NotificationType.SYNC_DATA_COMPLETE, session);
     });

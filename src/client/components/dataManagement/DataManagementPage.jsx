@@ -23,6 +23,7 @@ class DataManagementPage extends React.Component {
 
         this.syncData = this.syncData.bind(this);
         this.showSessionLogs = this.showSessionLogs.bind(this);
+        this.closeSessionLogs = this.closeSessionLogs.bind(this);
     }
 
     async syncData() {
@@ -47,6 +48,13 @@ class DataManagementPage extends React.Component {
                 selectedSessionLogs: []
             });
         }
+    }
+
+    closeSessionLogs() {
+        this.setState({
+            selectedSessionId: null,
+            selectedSessionLogs: []
+        });
     }
 
     updateSyncDataSession(session, sessions) {
@@ -166,13 +174,17 @@ class DataManagementPage extends React.Component {
                     </Typography>
 
                     <Box display="flex" flexDirection="row">
-                        <SyncDataSessionList
-                            sessions={this.state.sessions}
-                            selectedSessionId={this.state.selectedSessionId}
-                            showSessionLogs={this.showSessionLogs} />
+                        <Box flex={1}>
+                            <SyncDataSessionList
+                                sessions={this.state.sessions}
+                                selectedSessionId={this.state.selectedSessionId}
+                                showSessionLogs={this.showSessionLogs} />
+                        </Box>
 
                         {this.state.selectedSessionId ? (
-                            <SyncDataSessionLog syncLog={this.state.selectedSessionLogs} />
+                            <Box flex={1}>
+                                <SyncDataSessionLog syncLog={this.state.selectedSessionLogs} close={this.closeSessionLogs} />
+                            </Box>
                         ) : null}
                     </Box>
                 </Box>

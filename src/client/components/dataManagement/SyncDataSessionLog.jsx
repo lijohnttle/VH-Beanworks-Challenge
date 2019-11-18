@@ -1,5 +1,6 @@
 import React from 'react';
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box, Paper, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 function getMessageText(record) {
     if (record.item === 'Account') {
@@ -22,22 +23,32 @@ function getMessageText(record) {
     return '';
 }
 
-const SyncDataSessionLog = ({ syncLog }) => {
+const SyncDataSessionLog = ({ syncLog, close }) => {
     return (
         <div>
-            <Box p={4} display="flex" flexDirection="row" justifyContent="space-between">
-                <Typography variant="h3">
-                    Sync Logs
-                </Typography>
+            <Box ml={4}>
+                <Paper>
+                    <Box p={4}>
+                        <Box p={4} display="flex" flexDirection="row" justifyContent="space-between">
+                            <Typography variant="h3">
+                                Sync Logs
+                            </Typography>
+
+                            <IconButton size="small" onClick={close}>
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                        
+                        <ul>
+                            {syncLog.map((record, i) => (
+                                <div key={i}>
+                                    {`${new Date(record.timestamp).toLocaleString()}: ${getMessageText(record)}`}
+                                </div>
+                            ))}
+                        </ul>
+                    </Box>
+                </Paper>
             </Box>
-            
-            <ul>
-                {syncLog.map((record, i) => (
-                    <div key={i}>
-                        {`${new Date(record.timestamp).toLocaleString()}: ${getMessageText(record)}`}
-                    </div>
-                ))}
-            </ul>
         </div>
     );
 }
