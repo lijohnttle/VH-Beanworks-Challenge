@@ -147,47 +147,45 @@ class DataManagementPage extends React.Component {
     render() {
         return (
             <div>
-                <Box p={4}>
+                <Box p={4} borderColor="grey.400" border={1} borderLeft={0} borderRight={0} borderTop={0}>
                     <Typography variant="h1">
                         Data Management
                     </Typography>
                 </Box>
                 
-                <Box p={4}>
-                    <Box mb={4} display="flex" flexDirection="row" alignItems="center">
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={this.state.isLoading || this.state.isSyncRunning}
-                            onClick={this.syncData}>
-                            Sync
-                        </Button>
+                <Box display="flex" flexDirection="row">
+                    <Box p={4} flex={1}>
+                        <Box mb={4} display="flex" flexDirection="row" alignItems="center">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={this.state.isLoading || this.state.isSyncRunning}
+                                onClick={this.syncData}>
+                                Sync
+                            </Button>
 
-                        {this.state.isSyncRunning ? (
-                            <Box ml={2}>
-                                <CircularProgress size="1rem" color="secondary" thickness={5} />
-                            </Box>) : null}
-                    </Box>
-
-                    <Typography variant="h2" paragraph>
-                        Sync Activities
-                    </Typography>
-
-                    <Box display="flex" flexDirection="row">
-                        <Box flex={1}>
-                            <DataSyncSessionList
-                                sessions={this.state.sessions}
-                                selectedSessionId={this.state.selectedSessionId}
-                                showSessionLogs={this.showSessionLogs}
-                                closeSessionLogs={this.closeSessionLogs} />
+                            {this.state.isSyncRunning ? (
+                                <Box ml={2}>
+                                    <CircularProgress size="1rem" color="secondary" thickness={5} />
+                                </Box>) : null}
                         </Box>
 
-                        {this.state.selectedSessionId ? (
-                            <Box flex={1}>
-                                <DataSyncSessionLog syncLog={this.state.selectedSessionLogs} close={this.closeSessionLogs} />
-                            </Box>
-                        ) : null}
+                        <Typography variant="h2" paragraph>
+                            Sync Activities
+                        </Typography>
+
+                        <DataSyncSessionList
+                            sessions={this.state.sessions}
+                            selectedSessionId={this.state.selectedSessionId}
+                            showSessionLogs={this.showSessionLogs}
+                            closeSessionLogs={this.closeSessionLogs} />
                     </Box>
+
+                    {this.state.selectedSessionId ? (
+                        <Box flex={1} ml={4} border={1} borderLeft={1} borderBottom={0} borderRight={0} borderTop={0} borderColor="grey.400">
+                            <DataSyncSessionLog syncLog={this.state.selectedSessionLogs} close={this.closeSessionLogs} />
+                        </Box>
+                    ) : null}
                 </Box>
             </div>
         );

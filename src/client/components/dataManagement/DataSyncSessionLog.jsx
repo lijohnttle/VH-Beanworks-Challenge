@@ -26,28 +26,24 @@ function getMessageText(record) {
 const DataSyncSessionLog = ({ syncLog, close }) => {
     return (
         <div>
-            <Box ml={4}>
-                <Paper>
-                    <Box p={4}>
-                        <Box pb={4} display="flex" flexDirection="row" justifyContent="space-between">
-                            <Typography variant="h3">
-                                Sync Logs
-                            </Typography>
+            <Box p={4}>
+                <Box pb={4} display="flex" flexDirection="row" justifyContent="space-between">
+                    <Typography variant="h3">
+                        Sync Logs
+                    </Typography>
 
-                            <IconButton size="small" onClick={close}>
-                                <CloseIcon />
-                            </IconButton>
+                    <IconButton size="small" onClick={close}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                
+                <div>
+                    {syncLog.map((record, i) => (
+                        <Box key={i} mb={1}>
+                            {`${new Date(record.timestamp).toLocaleString()}: ${getMessageText(record)}`}
                         </Box>
-                        
-                        <div>
-                            {syncLog.map((record, i) => (
-                                <Box key={i} mb={1}>
-                                    {`${new Date(record.timestamp).toLocaleString()}: ${getMessageText(record)}`}
-                                </Box>
-                            ))}
-                        </div>
-                    </Box>
-                </Paper>
+                    ))}
+                </div>
             </Box>
         </div>
     );
