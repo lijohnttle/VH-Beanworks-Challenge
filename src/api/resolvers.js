@@ -1,5 +1,5 @@
 import ServerContext from '../server/ServerContext';
-import DataSyncManager from '../services/DataSyncManager';
+import DataSyncManager from '../services/dataSync/DataSyncManager';
 
 /**
  * @param {ServerContext} context

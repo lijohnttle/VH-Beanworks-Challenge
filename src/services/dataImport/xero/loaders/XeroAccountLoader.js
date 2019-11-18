@@ -1,5 +1,5 @@
 import XeroConnection from '../XeroConnection';
-import AccountModel from '../../../models/AccountModel';
+import AccountModel from '../../../../models/AccountModel';
 
 class XeroAccountLoader {
     /**

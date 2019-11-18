@@ -1,5 +1,5 @@
 import JestMock from 'jest-mock';
-import { XeroAccountLoader, XeroVendorLoader } from '../../../src/integrations/xero/loaders';
+import { XeroAccountLoader, XeroVendorLoader } from '../../../../src/services/dataImport/xero/loaders';
 
 describe('Loaders', () => {
     [0, 3].forEach(accountCount =>

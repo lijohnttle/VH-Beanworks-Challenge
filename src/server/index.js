@@ -2,18 +2,18 @@ import path from 'path';
 import express from 'express';
 import socketIo from 'socket.io';
 import { loadConfig } from './config';
-import { XeroAccountLoader, XeroVendorLoader } from '../dataImport/xero/loaders';
-import XeroConnection from '../dataImport/xero/XeroConnection';
+import { XeroAccountLoader, XeroVendorLoader } from '../services/dataImport/xero/loaders';
+import XeroConnection from '../services/dataImport/xero/XeroConnection';
 import { EventEmitter } from 'events';
 import graphqlHTTP from 'express-graphql';
 import { schema } from '../api/schema';
 import { useResolvers } from '../api/resolvers';
 import { useStorages } from '../persistence/mongodb';
-import DataSyncManager from '../services/DataSyncManager';
+import DataSyncManager from '../services/dataSync/DataSyncManager';
 import ServerContext from './ServerContext';
 import SyncDataEventHandler from '../events/SyncDataEventHandler';
 import NotificationType from '../constants/NotificationType';
-import XeroDataImporter from '../dataImport/xero/XeroDataImporter';
+import XeroDataImporter from '../services/dataImport/xero/XeroDataImporter';
 
 
 // utils

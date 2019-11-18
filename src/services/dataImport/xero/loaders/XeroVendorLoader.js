@@ -1,5 +1,5 @@
 import XeroConnection from '../XeroConnection';
-import VendorModel from '../../../models/VendorModel';
+import VendorModel from '../../../../models/VendorModel';
 
 class XeroVendorLoader {
     /**
