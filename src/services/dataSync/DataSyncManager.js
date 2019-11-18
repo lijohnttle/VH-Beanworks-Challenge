@@ -3,7 +3,7 @@ import DataImportItem from '../dataImport/DataImportItem';
 import DataImportStatus from '../dataImport/DataImportStatus';
 import ServerContext from '../../server/ServerContext';
 import EventTypes from '../../events/EventType';
-import SyncDataOperation from '../../constants/SyncDataOperation';
+import DataSyncOperation from './DataSyncOperation';
 import DataSyncState from './DataSyncState';
 import DataSyncItem from './DataSyncItem';
 import SyncLogRecordModel from '../../models/SyncLogRecordModel';
@@ -118,7 +118,7 @@ export default class DataSyncManager {
 
         this.activeSession.addLogRecord(new SyncLogRecordModel(
             Date.now(),
-            SyncDataOperation.SYNC_FROM_ERP,
+            DataSyncOperation.SYNC_FROM_ERP,
             DataSyncState.START,
             dataSyncItem
         ));
@@ -151,7 +151,7 @@ export default class DataSyncManager {
         finally {
             this.activeSession.addLogRecord(new SyncLogRecordModel(
                 Date.now(),
-                SyncDataOperation.SYNC_FROM_ERP,
+                DataSyncOperation.SYNC_FROM_ERP,
                 DataSyncState.END,
                 dataSyncItem,
                 completeStatus

@@ -5,7 +5,7 @@ import DataSyncSessionStatus from '../../../src/models/DataSyncSessionStatus';
 import DataImportItem from '../../../src/services/dataImport/DataImportItem';
 import DataImportStatus from '../../../src/services/dataImport/DataImportStatus';
 import DataSyncItem from '../../../src/services/dataSync/DataSyncItem';
-import SyncDataOperation from '../../../src/constants/SyncDataOperation';
+import DataSyncOperation from '../../../src/services/dataSync/DataSyncOperation';
 import DataSyncState from '../../../src/services/dataSync/DataSyncState';
 
 describe('synchronizing data', () => {
@@ -73,7 +73,7 @@ describe('synchronizing data', () => {
             expect(eventEmitterEmitMock.mock.calls[2][0]).toBe(EventType.SYNC_DATA_UPDATE);
             expect(session.syncLog.length).toBe(1);
             expect(session.syncLog[0]).toMatchObject({
-                operation: SyncDataOperation.SYNC_FROM_ERP,
+                operation: DataSyncOperation.SYNC_FROM_ERP,
                 state: DataSyncState.START,
                 item: dataImportItem === DataImportItem.ACCOUNT_LIST
                     ? DataSyncItem.ACCOUNT
@@ -129,7 +129,7 @@ describe('synchronizing data', () => {
             expect(eventEmitterEmitMock.mock.calls[2][0]).toBe(EventType.SYNC_DATA_UPDATE);
             expect(session.syncLog.length).toBe(1);
             expect(session.syncLog[0]).toMatchObject({
-                operation: SyncDataOperation.SYNC_FROM_ERP,
+                operation: DataSyncOperation.SYNC_FROM_ERP,
                 state: DataSyncState.END,
                 item: dataImportItem === DataImportItem.ACCOUNT_LIST
                     ? DataSyncItem.ACCOUNT
