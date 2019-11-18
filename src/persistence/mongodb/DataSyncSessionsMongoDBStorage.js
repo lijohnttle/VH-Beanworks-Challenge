@@ -1,12 +1,12 @@
-import SyncDataSessionModel from "../../models/SyncDataSessionModel";
+import DataSyncSessionModel from "../../models/DataSyncSessionModel";
 
-class SyncDataSessionsMongoDBStorage {
+class DataSyncSessionsMongoDBStorage {
     constructor(connectToDb) {
         this.connectToDb = connectToDb;
     }
 
     /**
-     * @param {SyncDataSessionModel[]} items
+     * @param {DataSyncSessionModel[]} items
      * @returns {Promise}
      */
     persist(items) {
@@ -64,11 +64,11 @@ class SyncDataSessionsMongoDBStorage {
                         return;
                     }
 
-                    resolve(result.map(s => new SyncDataSessionModel(s._id, s.status, s.startedUTC, s.syncLog)));
+                    resolve(result.map(s => new DataSyncSessionModel(s._id, s.status, s.startedUTC, s.syncLog)));
                 });
             });
         });
     }
 }
 
-export default SyncDataSessionsMongoDBStorage;
+export default DataSyncSessionsMongoDBStorage;

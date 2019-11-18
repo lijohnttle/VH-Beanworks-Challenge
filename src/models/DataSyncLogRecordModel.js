@@ -1,11 +1,11 @@
-import SyncCompleteStatus from './SyncCompleteStatus';
+import DataSyncCompleteStatus from './DataSyncCompleteStatus';
 
-class SyncLogRecordModel {
+class DataSyncLogRecordModel {
     /**
      * @param {Date} timestamp 
      * @param {String} operation 
      * @param {String} state 
-     * @param {SyncCompleteStatus} completeStatus 
+     * @param {DataSyncCompleteStatus} completeStatus 
      */
     constructor(timestamp, operation, state, item, status = null) {
         this.timestamp = timestamp;
@@ -16,4 +16,4 @@ class SyncLogRecordModel {
     }
 }
 
-export default SyncLogRecordModel;
+export default DataSyncLogRecordModel;

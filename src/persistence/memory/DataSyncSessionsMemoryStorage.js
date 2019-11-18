@@ -1,13 +1,13 @@
-import SyncDataSessionModel from "../../models/SyncDataSessionModel";
+import DataSyncSessionModel from "../../models/DataSyncSessionModel";
 
-class SyncDataSessionsMemoryStorage {
+class DataSyncSessionsMemoryStorage {
     constructor() {
         this.items = [];
         this.sessionCounter = 1;
     }
 
     /**
-     * @param {SyncDataSessionModel[]} items
+     * @param {DataSyncSessionModel[]} items
      * @returns {Promise}
      */
     async persist(items) {
@@ -31,4 +31,4 @@ class SyncDataSessionsMemoryStorage {
     }
 }
 
-export default SyncDataSessionsMemoryStorage;
+export default DataSyncSessionsMemoryStorage;

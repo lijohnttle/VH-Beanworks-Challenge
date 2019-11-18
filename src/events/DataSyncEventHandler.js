@@ -6,7 +6,7 @@ import ServerContext from '../server/ServerContext';
  * 
  * @param {ServerContext} serverContext
  */
-function subscribe(serverContext) {
+export function subscribe(serverContext) {
     const { eventEmitter} = serverContext;
 
     eventEmitter.on(EventTypes.SYNC_DATA_STARTED, () => {
@@ -18,7 +18,7 @@ function subscribe(serverContext) {
     eventEmitter.on(EventTypes.SYNC_DATA_UPDATE, session => {
         const { storages, io } = serverContext;
 
-        storages.syncDataSessionsStorage.persist([ session ]);
+        storages.dataSyncSessionsStorage.persist([ session ]);
         
         io.emit(NotificationType.SYNC_DATA_UPDATE, session);
     });
@@ -26,12 +26,8 @@ function subscribe(serverContext) {
     eventEmitter.on(EventTypes.SYNC_DATA_COMPLETE, session => {
         const { storages, io } = serverContext;
 
-        storages.syncDataSessionsStorage.persist([ session ]);
+        storages.dataSyncSessionsStorage.persist([ session ]);
 
         io.emit(NotificationType.SYNC_DATA_COMPLETE, session);
     });
-}
-
-export default {
-    subscribe
 }

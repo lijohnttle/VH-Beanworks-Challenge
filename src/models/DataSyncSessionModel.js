@@ -1,6 +1,6 @@
-import SyncLogRecordModel from './SyncLogRecordModel';
+import DataSyncLogRecordModel from './DataSyncLogRecordModel';
 
-export default class SyncDataSessionModel {
+export default class DataSyncSessionModel {
     constructor(sessionID, status, startedUTC, syncLog = []) {
         this.sessionID = sessionID;
         this.status = status;
@@ -10,7 +10,7 @@ export default class SyncDataSessionModel {
 
     /**
      * 
-     * @param {SyncLogRecordModel} record
+     * @param {DataSyncLogRecordModel} record
      */
     addLogRecord(record) {
         this.syncLog.push(record);

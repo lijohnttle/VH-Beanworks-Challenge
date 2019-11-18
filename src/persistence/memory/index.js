@@ -1,10 +1,10 @@
-import SyncDataSessionsMemoryStorage from './SyncDataSessionsMemoryStorage';
+import DataSyncSessionsMemoryStorage from './DataSyncSessionsMemoryStorage';
 import AccountMemoryStorage from './AccountMemoryStorage';
 import VendorMemoryStorage from './VendorMemoryStorage';
 
 export function useStorages() {
     return {
-        syncDataSessionsStorage: new SyncDataSessionsMemoryStorage(),
+        dataSyncSessionsStorage: new DataSyncSessionsMemoryStorage(),
         accountStorage: new AccountMemoryStorage(),
         vendorStorage: new VendorMemoryStorage()
     };

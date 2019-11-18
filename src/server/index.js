@@ -11,7 +11,7 @@ import { useResolvers } from '../api/resolvers';
 import { useStorages } from '../persistence/mongodb';
 import DataSyncManager from '../services/dataSync/DataSyncManager';
 import ServerContext from './ServerContext';
-import SyncDataEventHandler from '../events/SyncDataEventHandler';
+import * as DataSyncEventHandler from '../events/DataSyncEventHandler';
 import NotificationType from '../constants/NotificationType';
 import XeroDataImporter from '../services/dataImport/xero/XeroDataImporter';
 
@@ -32,7 +32,7 @@ const syncManager = new DataSyncManager(serverContext, importer);
 
 
 // event handlers
-SyncDataEventHandler.subscribe(serverContext);
+DataSyncEventHandler.subscribe(serverContext);
 
 
 // routes

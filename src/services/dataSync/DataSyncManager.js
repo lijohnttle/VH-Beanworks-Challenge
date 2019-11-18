@@ -6,9 +6,9 @@ import EventTypes from '../../events/EventType';
 import DataSyncOperation from './DataSyncOperation';
 import DataSyncState from './DataSyncState';
 import DataSyncItem from './DataSyncItem';
-import SyncLogRecordModel from '../../models/SyncLogRecordModel';
-import SyncCompleteStatus from '../../models/SyncCompleteStatus';
-import SyncDataSessionModel from '../../models/SyncDataSessionModel';
+import DataSyncLogRecordModel from '../../models/DataSyncLogRecordModel';
+import DataSyncCompleteStatus from '../../models/DataSyncCompleteStatus';
+import DataSyncSessionModel from '../../models/DataSyncSessionModel';
 import DataSyncSessionStatus from '../../models/DataSyncSessionStatus';
 import uuidv1 from 'uuid/v1';
 
@@ -74,7 +74,7 @@ export default class DataSyncManager {
 
             // start data synchronization process
             eventEmitter.emit(EventTypes.SYNC_DATA_STARTED);
-            this.activeSession = new SyncDataSessionModel(uuidv1(), DataSyncSessionStatus.ACTIVE, Date.now());
+            this.activeSession = new DataSyncSessionModel(uuidv1(), DataSyncSessionStatus.ACTIVE, Date.now());
             eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
             
             // import data
@@ -116,7 +116,7 @@ export default class DataSyncManager {
     _startSyncList(dataSyncItem) {
         const { eventEmitter } = this.serverContext;
 
-        this.activeSession.addLogRecord(new SyncLogRecordModel(
+        this.activeSession.addLogRecord(new DataSyncLogRecordModel(
             Date.now(),
             DataSyncOperation.SYNC_FROM_ERP,
             DataSyncState.START,
@@ -144,12 +144,12 @@ export default class DataSyncManager {
             await storage.persist(data);
         }
         catch (error) {
-            completeStatus = new SyncCompleteStatus(error);
+            completeStatus = new DataSyncCompleteStatus(error);
 
             throw error;
         }
         finally {
-            this.activeSession.addLogRecord(new SyncLogRecordModel(
+            this.activeSession.addLogRecord(new DataSyncLogRecordModel(
                 Date.now(),
                 DataSyncOperation.SYNC_FROM_ERP,
                 DataSyncState.END,

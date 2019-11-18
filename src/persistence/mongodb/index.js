@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import SyncDataSessionsMongoDBStorage from './SyncDataSessionsMongoDBStorage.js';
+import DataSyncSessionsMongoDBStorage from './DataSyncSessionsMongoDBStorage.js';
 import AccountMongoDBStorage from './AccountMongoDBStorage';
 import VendorMongoDBStorage from './VendorMongoDBStorage';
 
@@ -16,7 +16,7 @@ export function useStorages(config) {
     });
     
     return {
-        syncDataSessionsStorage: new SyncDataSessionsMongoDBStorage(connect),
+        dataSyncSessionsStorage: new DataSyncSessionsMongoDBStorage(connect),
         accountStorage: new AccountMongoDBStorage(connect),
         vendorStorage: new VendorMongoDBStorage(connect)
     };

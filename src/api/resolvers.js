@@ -8,7 +8,7 @@ import DataSyncManager from '../services/dataSync/DataSyncManager';
 function useResolvers(context, syncManager) {
     const resolvers = {
         getDataSyncState: async () => {
-            const sessions = await context.storages.syncDataSessionsStorage.getItems();
+            const sessions = await context.storages.dataSyncSessionsStorage.getItems();
 
             return {
                 notificationsEndpoint: context.config.server.socketUrl,
