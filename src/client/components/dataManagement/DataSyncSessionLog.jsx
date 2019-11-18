@@ -29,7 +29,7 @@ const DataSyncSessionLog = ({ syncLog, close }) => {
             <Box ml={4}>
                 <Paper>
                     <Box p={4}>
-                        <Box p={4} display="flex" flexDirection="row" justifyContent="space-between">
+                        <Box pb={4} display="flex" flexDirection="row" justifyContent="space-between">
                             <Typography variant="h3">
                                 Sync Logs
                             </Typography>
@@ -39,13 +39,13 @@ const DataSyncSessionLog = ({ syncLog, close }) => {
                             </IconButton>
                         </Box>
                         
-                        <ul>
+                        <div>
                             {syncLog.map((record, i) => (
-                                <div key={i}>
+                                <Box key={i} mb={1}>
                                     {`${new Date(record.timestamp).toLocaleString()}: ${getMessageText(record)}`}
-                                </div>
+                                </Box>
                             ))}
-                        </ul>
+                        </div>
                     </Box>
                 </Paper>
             </Box>
