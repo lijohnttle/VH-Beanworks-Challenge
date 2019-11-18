@@ -12,12 +12,10 @@ describe('synchronizing data', () => {
     it('start sync process should update active session and send STARTED and UPDATE events', async () => {
         let session = null;
         const eventEmitterEmitMock = JestMock.fn(eventType => {
-            if (eventType === EventType.SYNC_DATA_UPDATE) {
+            if (eventType === EventType.SYNC_DATA_STARTED) {
                 expect(syncManager.activeSession.status).toBe(DataSyncSessionStatus.ACTIVE);
                 
-                if (!session) {
-                    session = syncManager.activeSession;
-                }
+                session = syncManager.activeSession;
             }
         });
         const importMock = JestMock.fn(() => Promise.resolve());
@@ -37,7 +35,7 @@ describe('synchronizing data', () => {
 
         expect(eventEmitterEmitMock.mock.calls.length).toBe(3);
         expect(eventEmitterEmitMock.mock.calls[0][0]).toBe(EventType.SYNC_DATA_STARTING);
-        expect(eventEmitterEmitMock.mock.calls[1][0]).toBe(EventType.SYNC_DATA_UPDATE);
+        expect(eventEmitterEmitMock.mock.calls[1][0]).toBe(EventType.SYNC_DATA_STARTED);
         expect(eventEmitterEmitMock.mock.calls[2][0]).toBe(EventType.SYNC_DATA_COMPLETE);
         expect(session.status).toBe(DataSyncSessionStatus.COMPLETE);
     });
@@ -46,12 +44,9 @@ describe('synchronizing data', () => {
         it(`starting import of the ${dataImportItem} should add log record to active session and send UPDATE`, async () => {
             let session = null;
             const eventEmitterEmitMock = JestMock.fn(eventType => {
-                if (eventType === EventType.SYNC_DATA_UPDATE) {
+                if (eventType === EventType.SYNC_DATA_STARTED) {
                     expect(syncManager.activeSession.status).toBe(DataSyncSessionStatus.ACTIVE);
-
-                    if (!session) {
-                        session = syncManager.activeSession;
-                    }
+                    session = syncManager.activeSession;
                 }
             });
             const importMock = JestMock.fn(dataLoadedCallback =>
@@ -86,12 +81,9 @@ describe('synchronizing data', () => {
         it(`finishing import of the ${dataImportItem} should persist data, add log record to active session and send UPDATE`, async () => {
             let session = null;
             const eventEmitterEmitMock = JestMock.fn(eventType => {
-                if (eventType === EventType.SYNC_DATA_UPDATE) {
+                if (eventType === EventType.SYNC_DATA_STARTED) {
                     expect(syncManager.activeSession.status).toBe(DataSyncSessionStatus.ACTIVE);
-
-                    if (!session) {
-                        session = syncManager.activeSession;
-                    }
+                    session = syncManager.activeSession;
                 }
             });
             const importMock = JestMock.fn(dataLoadedCallback =>
