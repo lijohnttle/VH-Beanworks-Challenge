@@ -11,7 +11,11 @@ This project is a hackathon challenge organized by [VanHack](https://www.vanhack
 - As a user, I want to be able, per sync request, to get the detailed sync process timeline, so
 that I can determine exactly when my data exported from my erp to my app
 
-## Running
+## Architecture
+
+![Architecture](/documentation/Architecture.jpg)
+
+## Running application
 
 ### Prerequisites
 
@@ -31,7 +35,7 @@ To change default web server configuration please edit ~/configs/production/serv
 
 To change default Xero connection configuration please edit ~/configs/production/xero.config.json file.
 
-### Run application
+### Running
 
 - Open Command Line / Terminal in your system and navigate to the directory with clonned repository
 - To build project execute next commands:
