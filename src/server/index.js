@@ -12,7 +12,6 @@ import { useRepositories } from '../services/persistence/mongodb';
 import DataSyncManager from '../services/dataSync/DataSyncManager';
 import ServerContext from './ServerContext';
 import * as DataSyncEventHandler from '../events/DataSyncEventHandler';
-import NotificationType from '../constants/NotificationType';
 import XeroDataImporter from '../services/dataImport/xero/XeroDataImporter';
 import DataSyncSessionArchiver from '../services/dataSync/DataSyncSessionArchiver';
 
@@ -62,11 +61,5 @@ const server = app.listen(config.server.port, () => {
 });
 
 const io = socketIo(server, { serveClient: false });
-
-io.on('connection', socket => {
-    socket.on(NotificationType.JOIN_ROOM, room => {
-        socket.join(room);
-    });
-});
 
 serverContext.configureIo(io);

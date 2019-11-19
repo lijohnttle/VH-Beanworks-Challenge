@@ -1,5 +1,5 @@
 import EventTypes from './EventType';
-import NotificationType from '../constants/NotificationType';
+import NotificationType from '../notifications/NotificationType';
 import ServerContext from '../server/ServerContext';
 
 /**

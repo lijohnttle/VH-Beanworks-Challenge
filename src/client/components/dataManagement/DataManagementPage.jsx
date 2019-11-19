@@ -2,7 +2,7 @@ import React from 'react';
 import socketIoClient from 'socket.io-client';
 import { Typography, Button, Box, CircularProgress } from '@material-ui/core';
 import DataSyncService from '../../services/DataSyncService';
-import NotificationType from '../../../constants/NotificationType';
+import NotificationType from '../../../notifications/NotificationType';
 import DataSyncSessionList from './DataSyncSessionList';
 import DataSyncSessionLog from './DataSyncSessionLog';
 
