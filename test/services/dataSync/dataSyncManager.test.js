@@ -90,6 +90,7 @@ describe('synchronizing data', () => {
                 Promise.resolve(dataLoadedCallback(dataImportItem, DataImportStatus.FINISHED, null, null)));
             const accountsPersistMock = JestMock.fn(() => Promise.resolve());
             const vendorsPersistMock = JestMock.fn(() => Promise.resolve());
+            const archiveMock = JestMock.fn();
             const serverContext = {
                 eventEmitter: {
                     emit: eventEmitterEmitMock
@@ -106,7 +107,10 @@ describe('synchronizing data', () => {
             const dataImporter = {
                 import: importMock
             };
-            const syncManager = new DataSyncManager(serverContext, dataImporter);
+            const dataArchiver = {
+                archive: archiveMock
+            };
+            const syncManager = new DataSyncManager(serverContext, dataImporter, dataArchiver);
 
 
             await syncManager.syncData();
@@ -118,6 +122,7 @@ describe('synchronizing data', () => {
             else if (dataImportItem === DataImportItem.VENDOR_LIST) {
                 expect(vendorsPersistMock.mock.calls.length).toBe(1);
             }
+            expect(archiveMock.mock.calls.length).toBe(1);
             expect(eventEmitterEmitMock.mock.calls[2][0]).toBe(EventType.SYNC_DATA_UPDATE);
             expect(session.syncLog.length).toBe(1);
             expect(session.syncLog[0]).toMatchObject({

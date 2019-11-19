@@ -1,10 +1,11 @@
 import React from 'react';
-import { Table, TableBody, TableRow, TableCell,Fab, Tooltip, CircularProgress, IconButton } from '@material-ui/core';
+import { Table, TableBody, TableRow, TableCell,Fab, Tooltip, CircularProgress, IconButton, Menu, MenuItem, Link } from '@material-ui/core';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import CheckIcon from '@material-ui/icons/Check';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { withStyles } from '@material-ui/styles';
 import DataSyncSessionStatus from '../../../models/DataSyncSessionStatus';
+import DataSyncItem from '../../../services/dataSync/DataSyncItem';
 
 const SyncTableCell = withStyles(theme => ({
     head: {
@@ -36,6 +37,16 @@ const renderSessionStatus = (status) => {
 };
 
 const DataSyncSessionList = ({ sessions, selectedSessionId, showSessionLogs, closeSessionLogs }) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleShowMenuClick = event => {
+        setAnchorEl(event.currentTarget);
+    };
+    
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <div>
             <Table>
@@ -43,9 +54,11 @@ const DataSyncSessionList = ({ sessions, selectedSessionId, showSessionLogs, clo
                     {sessions.map(session => {
                         const classes = { };
                         const isSelected = selectedSessionId === session.sessionID;
+                        let showLogsText = "Show logs";
 
                         if (isSelected) {
                             classes.root = 'selected';
+                            let showLogsText = "Hide logs";
                         }
 
                         return (
@@ -57,18 +70,32 @@ const DataSyncSessionList = ({ sessions, selectedSessionId, showSessionLogs, clo
                                     {new Date(session.startedUTC).toLocaleString()}
                                 </SyncTableCell>
                                 <SyncTableCell align="right">
-                                    <Tooltip title="Download data set" aria-label="download-data">
-                                        <IconButton
-                                            color={isSelected ? "default" : "primary"}
-                                            size="small" 
-                                            href={`/archives/${session.sessionID}`}
-                                            target="__blank">
-                                            <GetAppIcon />
-                                        </IconButton>
-                                    </Tooltip>
+                                    <IconButton
+                                        aria-label="more"
+                                        aria-controls="long-menu"
+                                        aria-haspopup="true"
+                                        onClick={handleShowMenuClick}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        keepMounted
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleMenuClose}>
+                                        <Link href={`/archives/${session.sessionID}/${DataSyncItem.ACCOUNT}`} target="_blank">
+                                            <MenuItem>
+                                                Accounts
+                                            </MenuItem>
+                                        </Link>
+                                        <Link href={`/archives/${session.sessionID}/${DataSyncItem.VENDOR}`} target="_blank">
+                                            <MenuItem>
+                                                Vendors
+                                            </MenuItem>
+                                        </Link>
+                                    </Menu>
                                 </SyncTableCell>
                                 <SyncTableCell align="right">
-                                    <Tooltip title="Show logs..." aria-label="show-logs">
+                                    <Tooltip title={showLogsText} aria-label="show-logs">
                                         <Fab
                                             color={isSelected ? "default" : "primary"}
                                             size="small" 

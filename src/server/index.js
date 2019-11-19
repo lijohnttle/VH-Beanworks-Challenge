@@ -14,6 +14,7 @@ import ServerContext from './ServerContext';
 import * as DataSyncEventHandler from '../events/DataSyncEventHandler';
 import NotificationType from '../constants/NotificationType';
 import XeroDataImporter from '../services/dataImport/xero/XeroDataImporter';
+import DataSyncSessionArchiver from '../services/dataSync/DataSyncSessionArchiver';
 
 
 // utils
@@ -27,8 +28,9 @@ const serverContext = new ServerContext(config, useRepositories(config), eventEm
 const app = express();
 
 const xeroConnection = new XeroConnection(config.xero);
-const importer = new XeroDataImporter(xeroConnection, new XeroAccountLoader(), new XeroVendorLoader())
-const syncManager = new DataSyncManager(serverContext, importer);
+const importer = new XeroDataImporter(xeroConnection, new XeroAccountLoader(), new XeroVendorLoader());
+const dataSyncArchiver = new DataSyncSessionArchiver();
+const syncManager = new DataSyncManager(serverContext, importer, dataSyncArchiver);
 
 
 // event handlers
@@ -44,8 +46,8 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }));
 
-app.get('/archives/:sessionId', async (req, res) => {
-    const data = await syncManager.getArchive(req.params.sessionId);
+app.get('/archives/:sessionId/:dataSyncItem', async (req, res) => {
+    const data = await syncManager.getArchive(req.params.sessionId, req.params.dataSyncItem);
     res.json(data);
 });
 

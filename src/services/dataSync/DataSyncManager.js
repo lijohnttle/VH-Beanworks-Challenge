@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import XeroDataImporter from '../dataImport/xero/XeroDataImporter';
 import DataImportItem from '../dataImport/DataImportItem';
 import DataImportStatus from '../dataImport/DataImportStatus';
@@ -12,6 +10,7 @@ import DataSyncLogRecordModel from '../../models/DataSyncLogRecordModel';
 import DataSyncCompleteStatus from '../../models/DataSyncCompleteStatus';
 import DataSyncSessionModel from '../../models/DataSyncSessionModel';
 import DataSyncSessionStatus from '../../models/DataSyncSessionStatus';
+import DataSyncSessionArchiver from './DataSyncSessionArchiver';
 import uuidv1 from 'uuid/v1';
 
 /**
@@ -52,10 +51,12 @@ export default class DataSyncManager {
     /**
      * @param {ServerContext} serverContext
      * @param {XeroDataImporter} dataImporter
+     * @param {DataSyncSessionArchiver} dataArchiver
      */
-    constructor(serverContext, dataImporter) {
+    constructor(serverContext, dataImporter, dataArchiver) {
         this.serverContext = serverContext;
         this.dataImporter = dataImporter;
+        this.dataArchiver = dataArchiver;
         this.activeSession = null;
     }
 
@@ -111,26 +112,8 @@ export default class DataSyncManager {
         }
     }
 
-    async getArchive(sessionID) {
-        const archiveDirectory = path.resolve(process.cwd(), 'archives');
-        const archiveFileName = `${sessionID}.json`;
-        const archivePath = path.resolve(archiveDirectory, archiveFileName);
-
-        return new Promise((resolve, reject) => {
-            if (fs.existsSync(archivePath)) {
-                fs.readFile(archivePath, 'utf8', (err, data) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(data);
-                    }
-                });
-            }
-            else {
-                resolve('');
-            }
-        });
+    getArchive(sessionID, dataSyncItem) {
+        return this.dataArchiver.getArchive(sessionID, dataSyncItem);
     }
 
     /**
@@ -166,7 +149,7 @@ export default class DataSyncManager {
         try {
             await repository.persist(data);
             
-            this._archive(data);
+            this.dataArchiver.archive(this.activeSession.sessionID, dataSyncItem, data);
         }
         catch (error) {
             completeStatus = new DataSyncCompleteStatus(error);
@@ -184,24 +167,5 @@ export default class DataSyncManager {
 
             eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
         }
-    }
-
-    _archive(data) {
-        const archiveDirectory = path.resolve(process.cwd(), 'archives');
-        const archiveFileName = `${this.activeSession.sessionID}.json`;
-        const archivePath = path.resolve(archiveDirectory, archiveFileName);
-
-        fs.mkdir(archiveDirectory, { recursive: true }, (err) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                fs.writeFile(archivePath, JSON.stringify(data), err => {
-                    if (err) {
-                        console.log(err);
-                    }
-                });
-            }
-        });
     }
 }
