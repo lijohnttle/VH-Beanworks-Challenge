@@ -37,18 +37,18 @@ To change default Xero connection configuration please edit /configs/production/
 
 ### Running
 
-- Open Command Line / Terminal in your system and navigate to the directory with clonned repository
-- To build project execute next commands:
+1. Open Command Line / Terminal in your system and navigate to the directory with clonned repository.
+2. To build project execute next commands:
 
 ```
 npm install
 npm run build:prod
 ```
 
-- To run application run next command:
+3. To run application run next command:
 
 ```
 npm start
 ```
 
-Open in the browser http://localhost:3000/ (or specify another port if it has been changed in config file).
+4. Open in the browser http://localhost:3000/ (or specify another port if it has been changed in config file).
