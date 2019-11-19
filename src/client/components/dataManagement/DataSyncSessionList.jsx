@@ -84,12 +84,12 @@ const DataSyncSessionList = ({ sessions, selectedSessionId, showSessionLogs, clo
                                         onClose={handleMenuClose}>
                                         <Link href={`/archives/${session.sessionID}/${DataSyncItem.ACCOUNT}`} target="_blank">
                                             <MenuItem>
-                                                Accounts
+                                                Download Accounts data
                                             </MenuItem>
                                         </Link>
                                         <Link href={`/archives/${session.sessionID}/${DataSyncItem.VENDOR}`} target="_blank">
                                             <MenuItem>
-                                                Vendors
+                                                Download Vendors data
                                             </MenuItem>
                                         </Link>
                                     </Menu>
