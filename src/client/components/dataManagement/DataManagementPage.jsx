@@ -19,7 +19,6 @@ class DataManagementPage extends React.Component {
             selectedSessionLogs: []
         };
         this._socket = null;
-        this._sessionSocket = null;
 
         this.syncData = this.syncData.bind(this);
         this.showSessionLogs = this.showSessionLogs.bind(this);
@@ -73,7 +72,6 @@ class DataManagementPage extends React.Component {
             const syncState = await DataSyncService.getDataSyncState();
             const endpoint = {
                 response: false,
-                reconnect: true,
                 endpoint: syncState.notificationsEndpoint
             }
 

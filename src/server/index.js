@@ -8,7 +8,7 @@ import { EventEmitter } from 'events';
 import graphqlHTTP from 'express-graphql';
 import { schema } from '../api/schema';
 import { useResolvers } from '../api/resolvers';
-import { useStorages } from '../persistence/mongodb';
+import { useStorages } from '../services/persistence/mongodb';
 import DataSyncManager from '../services/dataSync/DataSyncManager';
 import ServerContext from './ServerContext';
 import * as DataSyncEventHandler from '../events/DataSyncEventHandler';

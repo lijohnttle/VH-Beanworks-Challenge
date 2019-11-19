@@ -1,4 +1,4 @@
-import DataSyncSessionModel from "../../models/DataSyncSessionModel";
+import DataSyncSessionModel from "../../../models/DataSyncSessionModel";
 
 class DataSyncSessionsMongoDBStorage {
     constructor(connectToDb) {

@@ -1,4 +1,4 @@
-import VendorModel from "../../models/VendorModel";
+import VendorModel from "../../../models/VendorModel";
 
 class VendorMongoDBStorage {
     constructor(connectToDb) {
