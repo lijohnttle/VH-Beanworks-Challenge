@@ -94,11 +94,11 @@ describe('synchronizing data', () => {
                 eventEmitter: {
                     emit: eventEmitterEmitMock
                 },
-                storages: {
-                    accountStorage: {
+                repositories: {
+                    accounts: {
                         persist: accountsPersistMock
                     },
-                    vendorStorage: {
+                    vendors: {
                         persist: vendorsPersistMock
                     }
                 }

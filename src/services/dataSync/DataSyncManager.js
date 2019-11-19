@@ -38,12 +38,12 @@ function convertDataImportItemToDataSyncItem(dataImportItem) {
  * 
  * @returns {Object}
  */
-function getStorageByDataSyncItem(dataSyncItem, storages) {
+function getRepositoryByDataSyncItem(dataSyncItem, repositories) {
     if (dataSyncItem === DataSyncItem.ACCOUNT) {
-        return storages.accountStorage;
+        return repositories.accounts;
     }
     else if (dataSyncItem === DataSyncItem.VENDOR) {
-        return storages.vendorStorage;
+        return repositories.vendors;
     }
 }
 
@@ -161,10 +161,10 @@ export default class DataSyncManager {
         const { eventEmitter } = this.serverContext;
 
         let completeStatus = null;
-        const storage = getStorageByDataSyncItem(dataSyncItem, this.serverContext.storages);
+        const repository = getRepositoryByDataSyncItem(dataSyncItem, this.serverContext.repositories);
 
         try {
-            await storage.persist(data);
+            await repository.persist(data);
             
             this._archive(data);
         }

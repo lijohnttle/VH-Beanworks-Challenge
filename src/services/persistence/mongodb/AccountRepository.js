@@ -1,19 +1,19 @@
-import VendorModel from "../../../models/VendorModel";
+import AccountModel from "../../../models/AccountModel";
 
-class VendorMongoDBStorage {
+class AccountRepository {
     constructor(connectToDb) {
         this.connectToDb = connectToDb;
     }
 
     /**
-     * @param {VendorModel[]} vendors
+     * @param {AccountModel[]} items
      * @returns {Promise}
      */
     persist(items) {
         return new Promise(async (resolve, reject) => {
             const db = await this.connectToDb;
 
-            db.collection('vendors', (error, collection) => {
+            db.collection('accounts', (error, collection) => {
                 if (error) {
                     reject(error);
                     return;
@@ -22,10 +22,10 @@ class VendorMongoDBStorage {
                 var bulkUpdateOps = items.map(doc => {
                     return {
                         "updateOne": {
-                            "filter": { "_id": doc.vendorID },
+                            "filter": { "_id": doc.accountID },
                             "update": {
                                 "$set": {
-                                    "_id": doc.vendorID,
+                                    "_id": doc.accountID,
                                     "name": doc.name,
                                     "status": doc.status,
                                     "updatedDateUTC": doc.updatedDateUTC
@@ -48,11 +48,11 @@ class VendorMongoDBStorage {
         });
     }
 
-    async getItems() {
+    getItems() {
         return new Promise(async (resolve, reject) => {
             const db = await this.connectToDb;
 
-            db.collection('vendors', (error, collection) => {
+            db.collection('accounts', (error, collection) => {
                 if (error) {
                     reject(error);
                     return;
@@ -71,4 +71,4 @@ class VendorMongoDBStorage {
     }
 }
 
-export default VendorMongoDBStorage;
+export default AccountRepository;

@@ -1,6 +1,6 @@
 import DataSyncSessionModel from "../../../models/DataSyncSessionModel";
 
-class DataSyncSessionsMongoDBStorage {
+class DataSyncSessionRepository {
     constructor(connectToDb) {
         this.connectToDb = connectToDb;
     }
@@ -136,4 +136,4 @@ class DataSyncSessionsMongoDBStorage {
     }
 }
 
-export default DataSyncSessionsMongoDBStorage;
+export default DataSyncSessionRepository;

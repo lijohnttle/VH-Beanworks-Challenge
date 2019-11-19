@@ -5,12 +5,12 @@ export default class ServerContext {
     /**
      * 
      * @param {Object} config
-     * @param {Object} storages 
+     * @param {Object} repositories 
      * @param {EventEmitter} eventEmitter 
      */
-    constructor(config, storages, eventEmitter) {
+    constructor(config, repositories, eventEmitter) {
         this.config = config;
-        this.storages = storages;
+        this.repositories = repositories;
         this.eventEmitter = eventEmitter;
         this.io = null;
     }

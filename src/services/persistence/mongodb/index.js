@@ -1,9 +1,9 @@
 import { MongoClient } from 'mongodb';
-import DataSyncSessionsMongoDBStorage from './DataSyncSessionsMongoDBStorage.js';
-import AccountMongoDBStorage from './AccountMongoDBStorage';
-import VendorMongoDBStorage from './VendorMongoDBStorage';
+import DataSyncSessionRepository from './DataSyncSessionRepository';
+import AccountRepository from './AccountRepository';
+import VendorRepository from './VendorRepository';
 
-export function useStorages(config) {
+export function useRepositories(config) {
     const connect = new Promise((resolve, reject) => {
         MongoClient.connect(config.server.connectionString, (error, db) => {
             if (error) {
@@ -16,8 +16,8 @@ export function useStorages(config) {
     });
     
     return {
-        dataSyncSessionsStorage: new DataSyncSessionsMongoDBStorage(connect),
-        accountStorage: new AccountMongoDBStorage(connect),
-        vendorStorage: new VendorMongoDBStorage(connect)
+        dataSyncSessions: new DataSyncSessionRepository(connect),
+        accounts: new AccountRepository(connect),
+        vendors: new VendorRepository(connect)
     };
 }

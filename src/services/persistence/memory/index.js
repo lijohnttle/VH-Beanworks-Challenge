@@ -1,11 +1,11 @@
-import DataSyncSessionsMemoryStorage from './DataSyncSessionsMemoryStorage';
-import AccountMemoryStorage from './AccountMemoryStorage';
-import VendorMemoryStorage from './VendorMemoryStorage';
+import DataSyncSessionRepository from './DataSyncSessionRepository';
+import AccountRepository from './AccountRepository';
+import VendorRepository from './VendorRepository';
 
-export function useStorages() {
+export function useRepositories() {
     return {
-        dataSyncSessionsStorage: new DataSyncSessionsMemoryStorage(),
-        accountStorage: new AccountMemoryStorage(),
-        vendorStorage: new VendorMemoryStorage()
+        dataSyncSessions: new DataSyncSessionRepository(),
+        accounts: new AccountRepository(),
+        vendors: new VendorRepository()
     };
 };

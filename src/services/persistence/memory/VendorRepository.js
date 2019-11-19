@@ -1,16 +1,16 @@
-import AccountModel from "../../../models/AccountModel";
+import VendorModel from "../../../models/VendorModel";
 
-class AccountMemoryStorage {
+class VendorRepository {
     constructor() {
         this.items = [];
     }
 
     /**
-     * @param {AccountModel[]} items
+     * @param {VendorModel[]} vendors
      * @returns {Promise}
      */
     async persist(items) {
-        this.items = items;
+        this.items = items;        
     }
 
     async getItems() {
@@ -18,4 +18,4 @@ class AccountMemoryStorage {
     }
 }
 
-export default AccountMemoryStorage;
+export default VendorRepository;

@@ -1,6 +1,6 @@
 import DataSyncSessionModel from "../../../models/DataSyncSessionModel";
 
-class DataSyncSessionsMemoryStorage {
+class DataSyncSessionRepository {
     constructor() {
         this.items = [];
         this.sessionCounter = 1;
@@ -31,4 +31,4 @@ class DataSyncSessionsMemoryStorage {
     }
 }
 
-export default DataSyncSessionsMemoryStorage;
+export default DataSyncSessionRepository;
