@@ -1,8 +1,5 @@
 # Vanhack-Beanworks Challenge
 
-
-## What is this about
-
 This project is a hackathon challenge organized by [VanHack](https://www.vanhack.com/) with a task provided by [Beanworks](https://www.beanworks.com/).
 
 
