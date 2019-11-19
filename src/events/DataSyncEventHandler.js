@@ -16,25 +16,19 @@ export function subscribe(serverContext) {
     });
 
     eventEmitter.on(EventTypes.SYNC_DATA_STARTED, session => {
-        const { repositories, io } = serverContext;
-
-        repositories.dataSyncSessions.persist([ session ]);
+        const { io } = serverContext;
         
         io.emit(NotificationType.SYNC_DATA_UPDATE, session);
     });
 
     eventEmitter.on(EventTypes.SYNC_DATA_UPDATE, session => {
-        const { repositories, io } = serverContext;
-
-        repositories.dataSyncSessions.persistSyncLog([ session ]);
+        const { io } = serverContext;
         
         io.emit(NotificationType.SYNC_DATA_UPDATE, session);
     });
 
     eventEmitter.on(EventTypes.SYNC_DATA_COMPLETE, session => {
-        const { repositories, io } = serverContext;
-
-        repositories.dataSyncSessions.persistStatus([ session ]);
+        const { io } = serverContext;
 
         io.emit(NotificationType.SYNC_DATA_COMPLETE, session);
     });

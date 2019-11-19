@@ -70,7 +70,7 @@ export default class DataSyncManager {
             return;
         }
 
-        const { eventEmitter } = this.serverContext;
+        const { eventEmitter, repositories } = this.serverContext;
 
         try {
             const self = this;
@@ -78,6 +78,7 @@ export default class DataSyncManager {
             // start data synchronization process
             eventEmitter.emit(EventTypes.SYNC_DATA_STARTING);
             this.activeSession = new DataSyncSessionModel(uuidv1(), DataSyncSessionStatus.ACTIVE, Date.now());
+            repositories.dataSyncSessions.persist([ this.activeSession ]);
             eventEmitter.emit(EventTypes.SYNC_DATA_STARTED, this.activeSession);
             
             // import data
@@ -108,6 +109,7 @@ export default class DataSyncManager {
             // complete data synchronization process
             const completedSession = this.activeSession;
             this.activeSession = null;
+            repositories.dataSyncSessions.persistStatus([ completedSession ]);
             eventEmitter.emit(EventTypes.SYNC_DATA_COMPLETE, completedSession);
         }
     }
@@ -121,7 +123,7 @@ export default class DataSyncManager {
      * @param {DataSyncItem} dataSyncItem
      */
     _startSyncList(dataSyncItem) {
-        const { eventEmitter } = this.serverContext;
+        const { eventEmitter, repositories } = this.serverContext;
 
         this.activeSession.addLogRecord(new DataSyncLogRecordModel(
             Date.now(),
@@ -131,6 +133,7 @@ export default class DataSyncManager {
         ));
 
         eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
+        repositories.dataSyncSessions.persistSyncLog([ this.activeSession ]);
     }
 
     /**
@@ -141,10 +144,10 @@ export default class DataSyncManager {
      * @returns {Promise}
      */
     async _completeSyncList(dataSyncItem, data) {
-        const { eventEmitter } = this.serverContext;
+        const { eventEmitter, repositories } = this.serverContext;
 
         let completeStatus = null;
-        const repository = getRepositoryByDataSyncItem(dataSyncItem, this.serverContext.repositories);
+        const repository = getRepositoryByDataSyncItem(dataSyncItem, repositories);
 
         try {
             await repository.persist(data);
@@ -165,6 +168,7 @@ export default class DataSyncManager {
                 completeStatus
             ));
 
+            repositories.dataSyncSessions.persistSyncLog([ this.activeSession ]);
             eventEmitter.emit(EventTypes.SYNC_DATA_UPDATE, this.activeSession);
         }
     }
