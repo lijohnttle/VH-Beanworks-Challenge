@@ -27,13 +27,13 @@ In order to build and run this application please perform next steps:
 
 ### Configuration
 
-To change default web server configuration please edit ~/configs/production/server.config.json file. It contains next settings:
+To change default web server configuration please edit /configs/production/server.config.json file. It contains next settings:
 
 *port* - port which is used to run web server<br/>
 *socketUrl* - endpoint for establishing socket connections to update UI real time<br/>
 *connectionString* - connection string to a MongoDB database
 
-To change default Xero connection configuration please edit ~/configs/production/xero.config.json file.
+To change default Xero connection configuration please edit /configs/production/xero.config.json file.
 
 ### Running
 
