@@ -52,3 +52,11 @@ npm start
 ```
 
 4. Open in the browser http://localhost:3000/ (or specify another port if it has been changed in config file).
+
+## Unit tests
+
+For unit testing Jest library is used. To run tests use next command:
+
+```
+npm test
+```
