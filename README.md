@@ -45,7 +45,7 @@ npm install
 npm run build:prod
 ```
 
-3. To run application run next command:
+3. To run application execute next command:
 
 ```
 npm start
